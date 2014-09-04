@@ -25,6 +25,7 @@ class Creature(object):
       self.flight = False
       self.slimy = False
       self.mount = False
+      self.holograph = False
 
   def __repr__(self):
       return ("name: {}\nprobability: {}\n"

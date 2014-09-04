@@ -39,7 +39,7 @@ class Gameboard(object):
         if creature.probability >= r:
             self.message = "SUCCESS"
             self.board[self.height - y][x - 1] = creature
-        else
+        else:
             self.message = "FAILURE"
 
     def holo_creature(self, x, y, creature):

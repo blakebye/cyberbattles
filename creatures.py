@@ -27,9 +27,10 @@ class Creature(object):
       self.holograph = False
 
   def __repr__(self):
-      return ("name: {}\nprobability: {}\n"
+      return ("{}\nname: {}\nprobability: {}\n"
               "str: {}\ndef: {}\nspd: {}\n"
-              "res: {}\nalign: {}\n").format(self.name, self.probability,
+              "res: {}\nalign: {}\n").format(type(self), self.name,
+                                            self.probability,
                                             self.strength, self.defense,
                                             self.speed, self.resist,
                                             self.alignment)

@@ -12,10 +12,12 @@ print "MECH WARRIOR CHANCE TO SPAWN ON EVERY SQUARE"
 for i in range(10):
     for j in range(15):
         gameboard.beam_creature(j + 1, i + 1, mech_warrior)
+
 gameboard.printboard()
 
-print "LEFT HALF OF BOARD IS KILLED, STILL NEED CORPSES"
 for i in range(10):
     for j in range(7):
-        gameboard.kill_creature(j + 1, i + 1)
+        if gameboard.check_living_creature(j + 1, i + 1) != 0:
+            gameboard.kill_creature(j + 1, i + 1)
+
 gameboard.printboard()

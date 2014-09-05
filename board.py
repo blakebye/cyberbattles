@@ -11,7 +11,7 @@ class Gameboard(object):
         for row in range(height):
             self.board.append([])
             for column in range(width):
-                self.board[row].append(0)
+                self.board[row].append({"alive": 0, "dead": 0})
         self.alignment = 0
         round_count = 1
         message = ""
@@ -27,11 +27,13 @@ class Gameboard(object):
                     list_of_elements.append(0)
                 else:
                     list_of_elements.append(element)
-            for element in list_of_elements:
-                try:
-                    print ("{}".format(element.name[0]), end=' ')
-                except:
-                    print (" ".format(), end=' ')
+            for square in list_of_elements:
+                if square["alive"] != 0:
+                    print ("{}".format(square["alive"].name[0]), sep='', end=' ')
+                elif square["dead"] != 0:
+                    print ("{}".format(square["dead"].name[0].lower()), sep='', end=' ')
+                else:
+                    print ("{}".format(" "), sep='', end=' ')
             print ('|')
         print(' ', sep='', end='')
         print('-' * (self.width * 2), sep='')
@@ -44,19 +46,28 @@ class Gameboard(object):
         r = random.randint(1, 10) / 10.0
         if creature.probability >= r:
             self.message = "SUCCESS"
-            self.board[self.height - y][x - 1] = creature
+            self.board[self.height - y][x - 1]["alive"] = creature
         else:
             self.message = "FAILURE"
 
     def holo_creature(self, x, y, creature):
         self.message = "SUCCESS"
-        self.board[self.height - y][x - 1] = creature
+        self.board[self.height - y][x - 1]["alive"] = creature
         creature.holograph = True
 
     # def beam_structure(self, x, y, structure):
 
     def kill_creature(self, x, y):
-        self.board[self.height - y][x - 1] = 0
+        self.board[self.height - y][x - 1]["dead"] = \
+        self.board[self.height - y][x - 1]["alive"]
+
+        self.board[self.height - y][x - 1]["alive"] = 0
+
+    def check_living_creature(self, x, y):
+        return self.board[self.height - y][x - 1]["alive"]
+
+    def check_dead_creature(self, x, y):
+        return self.board[self.height - y][x - 1]["dead"]
 
     def kill_structure(self, x, y, structure):
         self.board[self.height - y][x - 1] = 0

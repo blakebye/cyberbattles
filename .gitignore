@@ -52,8 +52,5 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-# Test Suite
-tests.py
-
 # BRAINSTORM
 BRAINSTORM

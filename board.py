@@ -57,17 +57,17 @@ class Gameboard(object):
 
     # def beam_structure(self, x, y, structure):
 
-    def kill_creature(self, x, y):
-        self.board[self.height - y][x - 1]["dead"] = \
-        self.board[self.height - y][x - 1]["alive"]
-
-        self.board[self.height - y][x - 1]["alive"] = 0
-
     def check_living_creature(self, x, y):
         return self.board[self.height - y][x - 1]["alive"]
 
     def check_dead_creature(self, x, y):
         return self.board[self.height - y][x - 1]["dead"]
+
+    def kill_creature(self, x, y):
+        if self.board[self.height - y][x - 1]["alive"].holograph == False:
+            self.board[self.height - y][x - 1]["dead"] = \
+            self.board[self.height - y][x - 1]["alive"]
+        self.board[self.height - y][x - 1]["alive"] = 0
 
     def kill_structure(self, x, y, structure):
         self.board[self.height - y][x - 1] = 0

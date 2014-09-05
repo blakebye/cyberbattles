@@ -1,4 +1,3 @@
-# POTENTIALLY ADD THE COMMANDER IN CONTROL TO THE CREATURE CLASS?
 """
 This module gives a way to generate all of the creatures that fight
 in CyberBattles. Some creatures can attack from range in addition to melee,

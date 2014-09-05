@@ -11,21 +11,29 @@ mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
 predator = c.Creature(name="Predator", probability=0.2,
                                 strength=9, defense=7, speed=5,
                                 resist=8, alignment='L')
-print "MECH WARRIOR CHANCE TO SPAWN ON EVERY SQUARE"
+
+print "Hologram a Predator on half the squares, randomly"
 
 for i in range(10):
     for j in range(0, 15):
-        gameboard.holo_creature(j + 1, i + 1, predator)
+        if random.randint(1, 10) > 5:
+            gameboard.holo_creature(j + 1, i + 1, predator)
+
+gameboard.print_board()
+
+print "Try to beam down a Mech Warrior on every square"
 
 for i in range(10):
     for j in range(0, 15):
         gameboard.beam_creature(j + 1, i + 1, mech_warrior)
 
-gameboard.printboard()
+gameboard.print_board()
+
+print "Kill the entire board, leaving behind corpses of only beamed down units"
 
 for i in range(10):
     for j in range(15):
         if gameboard.check_living_creature(j + 1, i + 1) != 0:
             gameboard.kill_creature(j + 1, i + 1)
 
-gameboard.printboard()
+gameboard.print_board()

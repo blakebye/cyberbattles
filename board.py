@@ -16,7 +16,7 @@ class Gameboard(object):
         round_count = 1
         message = ""
 
-    def printboard(self):
+    def print_board(self):
         print(' ', sep='', end='')
         print('-' * (self.width * 2), sep='')
         for row in range(len(self.board)):

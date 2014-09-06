@@ -66,9 +66,9 @@ class Gameboard(object):
             self.board[self.height / 2][self.width / 2]["alive"] = c.Commander()
 
         elif self.number_of_players == 2:
-            self.board[self.height / 2][int(round(self.width / 15.0))]["alive"] = \
+            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width / 15.0))]["alive"] = \
             c.Commander()
-            self.board[self.height / 2][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
             c.Commander()
 
         elif self.number_of_players == 3:
@@ -87,9 +87,9 @@ class Gameboard(object):
             c.Commander()
 
         elif self.number_of_players == 5:
-            self.board[self.height / 2][int(round(self.width / 15.0))]["alive"] = \
+            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width / 15.0))]["alive"] = \
             c.Commander()
-            self.board[self.height / 2][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
             c.Commander()
             self.board[int(round(self.height / 10.0))][self.width / 2]["alive"] = \
             c.Commander()
@@ -171,6 +171,10 @@ class Gameboard(object):
 
     def kill_commander(self, x, y, commander):
         self.board[self.height - y][x - 1]["alive"] = 0
+
+    def upgrade_commander(self, x, y, up):
+        if isinstance(self.check_occupancy(x, y), c.Commander):
+            self.check_occupancy(x, y).upgrade(up)
 
     def cast_spell(self, x, y, spell):
         if isinstance(spell, sp.HoloDetect):

@@ -107,12 +107,16 @@ for i in range(10):
 
 gameboard.print_board()
 
-print "create a few structures"
+print "create a few structures, randomly"
 
-gameboard.create_structure(2, 2, fortress)
-gameboard.create_structure(5, 2, gun_turret)
-gameboard.create_structure(8, 8, subspace_beacon)
-gameboard.create_structure(15, 5, force_field)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, fortress)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, gun_turret)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, subspace_beacon)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, force_field)
 
 gameboard.print_board()
 

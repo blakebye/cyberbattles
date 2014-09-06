@@ -1,13 +1,13 @@
-import random
-import creatures as c
-import board as b
-import structures as s
-import spells as sp
+# import random
+# import creatures as c
+# import board as b
+# import structures as s
+# import spells as sp
 
-gameboard = b.Gameboard(15, 10, 5)
-gameboard.spawn_commanders()
-gameboard.upgrade_commander(2, 6, "Symbiont")
-gameboard.print_board()
+# gameboard = b.Gameboard(15, 10, 5)
+# gameboard.spawn_commanders()
+# gameboard.upgrade_commander(2, 6, "Symbiont")
+# gameboard.print_board()
 
 # drone = c.Creature(name="Drone", probability=0.9, strength=1, defense=3,
 #                  speed=4, resist=4, alignment="T")
@@ -77,17 +77,16 @@ gameboard.print_board()
 
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.kill_creature(j + 1, i + 1)
 
 # gameboard.print_board()
 
-# gameboard = b.Gameboard(15, 10, 1)
 
-fortress = s.Fortress()
-gun_turret = s.GunTurret()
-subspace_beacon = s.SubspaceBeacon()
-force_field = s.ForceField()
+# fortress = s.Fortress()
+# gun_turret = s.GunTurret()
+# subspace_beacon = s.SubspaceBeacon()
+# force_field = s.ForceField()
 
 # predator = c.Creature(name="Predator", probability=0.2,
 #                                 strength=9, defense=7, speed=5,
@@ -108,11 +107,13 @@ force_field = s.ForceField()
 # floating_eye = c.FlyingCreature(name="Floating Eye", probability=0.5, strength=4,
 #                                defense=3, speed=6, resist=3, alignment="L")
 
+# gameboard = b.Gameboard(15, 10, 1)
+
 # print "holo down a droid on all the squares"
 
 # for i in range(10):
 #     for j in range(15):
-#         gameboard.holo_creature(j + 1, i + 1, predator)
+#         gameboard.holo_creature(j + 1, i + 1, floating_eye)
 
 # gameboard.print_board()
 
@@ -120,7 +121,7 @@ force_field = s.ForceField()
 # print "cast disintegrate on every square on the board"
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.cast_spell(j + 1, i + 1, disintegrate)
 
 # gameboard.print_board()
@@ -129,7 +130,7 @@ force_field = s.ForceField()
 # print "cast disrupt on every square on the board"
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.cast_spell(j + 1, i + 1, disrupt)
 
 # gameboard.print_board()
@@ -147,7 +148,7 @@ force_field = s.ForceField()
 # print "cast virus on every square on the board"
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.cast_spell(j + 1, i + 1, virus)
 
 # gameboard.print_board()
@@ -156,7 +157,7 @@ force_field = s.ForceField()
 # print "cast emp on every square on the board"
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.cast_spell(j + 1, i + 1, emp)
 
 # gameboard.print_board()
@@ -199,22 +200,22 @@ force_field = s.ForceField()
 
 # print "create a few structures, randomly"
 
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, fortress)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, gun_turret)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, subspace_beacon)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, force_field)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, fortress)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, gun_turret)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, subspace_beacon)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, force_field)
 
-gameboard.print_board()
+# gameboard.print_board()
 
 # print "Kill all creatures"
 
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), c.Creature):
 #             gameboard.kill_creature(j + 1, i + 1)
 
 # gameboard.print_board()
@@ -223,7 +224,7 @@ gameboard.print_board()
 
 # for i in range(10):
 #     for j in range(15):
-#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), s.Structure):
+#         if isinstance((gameboard.occupant(j + 1, i + 1)), s.Structure):
 #             gameboard.kill_structure(j + 1, i + 1)
 
 

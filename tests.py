@@ -92,48 +92,78 @@ mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
                                 strength=9, defense=9, speed=3,
                                 resist=5, alignment=2, range=3, rstr=4)
 
-print "beam down a Predator on all the squares"
+droid = c.Creature(name="Droid", probability=0.8,
+                                strength=3, defense=2, speed=1,
+                                resist=3, alignment=1)
 
-for i in range(10):
-    for j in range(15):
-        gameboard.beam_creature(j + 1, i + 1, predator)
+commander = c.Creature(name="Commander", probability=1.0,
+                                strength=5, defense=5, speed=1,
+                                resist=7, alignment=1)
 
-gameboard.print_board()
+floating_eye = c.FlyingCreature(name="Floating Eye", probability=0.5, strength=4,
+                               defense=3, speed=6, resist=3, alignment="L")
 
-print "holo down a Mech Warrior on 20% of the squares, randomly"
-for i in range(10):
-    for j in range(15):
-        if random.randint(1, 10) > 8:
-            gameboard.holo_creature(j + 1, i + 1, mech_warrior)
+# print "holo down a droid on all the squares"
 
-gameboard.print_board()
+# for i in range(10):
+#     for j in range(15):
+#         gameboard.holo_creature(j + 1, i + 1, predator)
 
-virus = sp.Virus()
-print "cast virus on every square on the board"
-for i in range(10):
-    for j in range(15):
-        if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
-            gameboard.cast_spell(j + 1, i + 1, virus)
+# gameboard.print_board()
 
-gameboard.print_board()
+# disintegrate = sp.Disintegrate()
+# print "cast disintegrate on every square on the board"
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#             gameboard.cast_spell(j + 1, i + 1, disintegrate)
 
-emp = sp.EMP()
-print "cast emp on every square on the board"
-for i in range(10):
-    for j in range(15):
-        if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
-            gameboard.cast_spell(j + 1, i + 1, emp)
+# gameboard.print_board()
 
-gameboard.print_board()
+# disrupt = sp.Disrupt()
+# print "cast disrupt on every square on the board"
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#             gameboard.cast_spell(j + 1, i + 1, disrupt)
 
-print "Resurrect the whole board"
-resurrect = sp.Resurrect()
+# gameboard.print_board()
 
-for i in range(10):
-    for j in range(15):
-        gameboard.cast_spell(j + 1, i + 1, resurrect)
 
-gameboard.print_board()
+# print "holo down a Mech Warrior on 20% of the squares, randomly"
+# for i in range(10):
+#     for j in range(15):
+#         if random.randint(1, 10) > 8:
+#             gameboard.holo_creature(j + 1, i + 1, mech_warrior)
+
+# gameboard.print_board()
+
+# virus = sp.Virus()
+# print "cast virus on every square on the board"
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#             gameboard.cast_spell(j + 1, i + 1, virus)
+
+# gameboard.print_board()
+
+# emp = sp.EMP()
+# print "cast emp on every square on the board"
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#             gameboard.cast_spell(j + 1, i + 1, emp)
+
+# gameboard.print_board()
+
+# print "Resurrect the whole board"
+# resurrect = sp.Resurrect()
+
+# for i in range(10):
+#     for j in range(15):
+#         gameboard.cast_spell(j + 1, i + 1, resurrect)
+
+# gameboard.print_board()
 
 # print "Align Life 2"
 

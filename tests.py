@@ -84,10 +84,10 @@ gameboard.print_board()
 
 # gameboard = b.Gameboard(15, 10, 1)
 
-# fortress = s.Fortress()
-# gun_turret = s.GunTurret()
-# subspace_beacon = s.SubspaceBeacon()
-# force_field = s.ForceField()
+fortress = s.Fortress()
+gun_turret = s.GunTurret()
+subspace_beacon = s.SubspaceBeacon()
+force_field = s.ForceField()
 
 # predator = c.Creature(name="Predator", probability=0.2,
 #                                 strength=9, defense=7, speed=5,
@@ -199,16 +199,16 @@ gameboard.print_board()
 
 # print "create a few structures, randomly"
 
-# i, j = random.randint(1, 15), random.randint(1, 10)
-# gameboard.create_structure(i, j, fortress)
-# i, j = random.randint(1, 15), random.randint(1, 10)
-# gameboard.create_structure(i, j, gun_turret)
-# i, j = random.randint(1, 15), random.randint(1, 10)
-# gameboard.create_structure(i, j, subspace_beacon)
-# i, j = random.randint(1, 15), random.randint(1, 10)
-# gameboard.create_structure(i, j, force_field)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, fortress)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, gun_turret)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, subspace_beacon)
+i, j = random.randint(1, 15), random.randint(1, 10)
+gameboard.create_structure(i, j, force_field)
 
-# gameboard.print_board()
+gameboard.print_board()
 
 # print "Kill all creatures"
 

@@ -4,6 +4,10 @@ import board as b
 import structures as s
 import spells as sp
 
+# gameboard = b.Gameboard(15, 10, 5)
+# gameboard.spawn_commanders()
+# gameboard.print_board()
+
 # drone = c.Creature(name="Drone", probability=0.9, strength=1, defense=3,
 #                  speed=4, resist=4, alignment="T")
 
@@ -77,31 +81,31 @@ import spells as sp
 
 # gameboard.print_board()
 
-gameboard = b.Gameboard(15, 10, 1)
+# gameboard = b.Gameboard(15, 10, 1)
 
-fortress = s.Fortress()
-gun_turret = s.GunTurret()
-subspace_beacon = s.SubspaceBeacon()
-force_field = s.ForceField()
+# fortress = s.Fortress()
+# gun_turret = s.GunTurret()
+# subspace_beacon = s.SubspaceBeacon()
+# force_field = s.ForceField()
 
-predator = c.Creature(name="Predator", probability=0.2,
-                                strength=9, defense=7, speed=5,
-                                resist=8, alignment=-2)
+# predator = c.Creature(name="Predator", probability=0.2,
+#                                 strength=9, defense=7, speed=5,
+#                                 resist=8, alignment=-2)
 
-mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
-                                strength=9, defense=9, speed=3,
-                                resist=5, alignment=2, range=3, rstr=4)
+# mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
+#                                 strength=9, defense=9, speed=3,
+#                                 resist=5, alignment=2, range=3, rstr=4)
 
-droid = c.Creature(name="Droid", probability=0.8,
-                                strength=3, defense=2, speed=1,
-                                resist=3, alignment=1)
+# droid = c.Creature(name="Droid", probability=0.8,
+#                                 strength=3, defense=2, speed=1,
+#                                 resist=3, alignment=1)
 
-commander = c.Creature(name="Commander", probability=1.0,
-                                strength=5, defense=5, speed=1,
-                                resist=7, alignment=1)
+# commander = c.Creature(name="Commander", probability=1.0,
+#                                 strength=5, defense=5, speed=1,
+#                                 resist=7, alignment=1)
 
-floating_eye = c.FlyingCreature(name="Floating Eye", probability=0.5, strength=4,
-                               defense=3, speed=6, resist=3, alignment="L")
+# floating_eye = c.FlyingCreature(name="Floating Eye", probability=0.5, strength=4,
+#                                defense=3, speed=6, resist=3, alignment="L")
 
 # print "holo down a droid on all the squares"
 

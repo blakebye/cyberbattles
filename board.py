@@ -27,31 +27,91 @@ class Gameboard(object):
             align = "Lifeforce %i" % abs(self.alignment)
         print("ALIGNMENT: %s" % align)
         print(' ', sep='', end='')
-        print('-' * (self.width * 2), sep='')
+        print('-' * (self.width * 2 - 1), sep='')
         for row in range(len(self.board)):
             print('|', end='')
             list_of_elements = []
+            counter = 0
             for element in self.board[row]:
                 if element == 0:
                     list_of_elements.append(0)
                 else:
                     list_of_elements.append(element)
             for square in list_of_elements:
-                if square["alive"] != 0:
-                    print ("{}".format(square["alive"].name[0]), 
-                           sep='', end=' ')
-                elif square["dead"] != 0:
-                    print ("{}".format(square["dead"].name[0].lower()), 
-                           sep='', end=' ')
+                counter += 1
+                if counter == self.width:
+                    if square["alive"] != 0:
+                        print ("{}".format(square["alive"].name[0]), 
+                               sep='', end='')
+                    elif square["dead"] != 0:
+                        print ("{}".format(square["dead"].name[0].lower()), 
+                               sep='', end='')
+                    else:
+                        print ("{}".format(" "), sep='', end='')
                 else:
-                    print ("{}".format(" "), sep='', end=' ')
+                    if square["alive"] != 0:
+                        print ("{}".format(square["alive"].name[0]), 
+                               sep='', end=' ')
+                    elif square["dead"] != 0:
+                        print ("{}".format(square["dead"].name[0].lower()), 
+                               sep='', end=' ')
+                    else:
+                        print ("{}".format(" "), sep='', end=' ')
             print ('|')
         print(' ', sep='', end='')
         print('-' * (self.width * 2), sep='')
 
     def spawn_commanders(self):
-        if number_of_players == 1:
-            pass
+        if self.number_of_players == 1:
+            self.board[self.height / 2][self.width / 2]["alive"] = c.Commander()
+
+        elif self.number_of_players == 2:
+            self.board[self.height / 2][int(round(self.width / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[self.height / 2][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+
+        elif self.number_of_players == 3:
+            self.board[self.height - 1][0]["alive"] = c.Commander()
+            self.board[self.height - 1][self.width - 1]["alive"] = c.Commander()
+            self.board[0][self.width / 2]["alive"] = c.Commander()
+
+        elif self.number_of_players == 4:
+            self.board[self.height - 1][int(round(self.width / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[self.height - 1][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][int(round(self.width / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+
+        elif self.number_of_players == 5:
+            self.board[self.height / 2][int(round(self.width / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[self.height / 2][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][self.width / 2]["alive"] = \
+            c.Commander()
+            self.board[self.height - 1][int(round(self.width * 4.0 / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[self.height - 1][int(round(self.width * 10.0 / 15.0))]["alive"] = \
+            c.Commander()
+
+        elif self.number_of_players == 6:
+            self.board[self.height - 1][int(round(self.width / 15))]["alive"] = \
+            c.Commander()
+            self.board[self.height - 1][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][int(round(self.width / 15))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
+            c.Commander()
+            self.board[int(round(self.height / 10.0))][self.width / 2]["alive"] = \
+            c.Commander()
+            self.board[self.height - 1][self.width / 2]["alive"] = \
+            c.Commander()
+            
 
     def beam_creature(self, x, y, creature):
         if self.board[self.height - y][x - 1]["alive"] == 0:

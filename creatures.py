@@ -38,10 +38,12 @@ class Creature(object):
 class Commander(Creature):
     """This creature is a commander."""
     def __init__(self):
+        self.name = "Commander"
         self.strength = 5
         self.defense = 5
         self.speed = 1
         self.resist = 7
+        self.range = 1
         self.flight = False
         self.on_mount = False
 
@@ -49,6 +51,24 @@ class Commander(Creature):
         return ("This is a commander.\n"
                 "Flight = {}\n"
                 "Mounted = {}".format(self.flight, self.on_mount))
+
+    def upgrade(up):
+        if up == "Symbiont":
+            self.strength = max(self.strength, 6)
+            self.defense = max(self.defense, 6)
+            self.speed = max(self.speed, 2)
+            self.resist = max(self.resist, 8)
+        if up == "Force Shield":
+            self.defense = max(self.defense, 7)
+        if up == "Force Armor":
+            self.defense = max(self.defense, 8)
+        if up == "Blaster":
+            self.range = max(self.range, 3)
+        if up == "Light Sabre":
+            self.strength = max(self.strength, 7)
+        if up == "Jetpack":
+            self.speed = max(self.speed, 3)
+            self.flight = True
 
 class RangedCreature(Creature):
     """This creature can attack from range and melee"""

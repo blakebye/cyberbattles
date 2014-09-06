@@ -143,29 +143,42 @@ class Gameboard(object):
             creature.holograph = True
 
     def create_structure(self, x, y, structure):
-        if isinstance(structure, s.Fortress):
-            if self.board[self.height - y][x - 1]["alive"] == 0:
-                self.board[self.height - y][x - 1]["alive"] = structure
+        r = random.randint(1, 10) / 10.0
+        if structure.probability > r:
+            if isinstance(structure, s.Fortress):
+                if self.board[self.height - y][x - 1]["alive"] == 0:
+                    self.board[self.height - y][x - 1]["alive"] = structure
 
-        elif (isinstance(structure, s.GunTurret) or 
-              isinstance(structure, s.SubspaceBeacon)):
-            for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
-                         (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
-                         (x + 2, y - 2)):
-                if (j > 0 and i > 0 and 
-                    j <= self.height and i <= self.width):
-                    if self.board[self.height - j][i - 1]["alive"] == 0:
-                        self.board[self.height - j][i - 1]["alive"] = structure
+            elif (isinstance(structure, s.GunTurret)):
+                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
+                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
+                             (x + 2, y - 2)):
+                    if (j > 0 and i > 0 and 
+                        j <= self.height and i <= self.width):
+                        if self.board[self.height - j][i - 1]["alive"] == 0:
+                            self.board[self.height - j][i - 1]["alive"] = structure
 
-        elif isinstance(structure, s.ForceField):
-            for i, j in ((x - 2, y + 1), (x - 2, y + 2), (x - 1, y + 2), 
-                         (x + 2, y + 1), (x + 2, y + 2), (x + 1, y + 2),
-                         (x - 2, y - 1), (x - 2, y - 2), (x - 1, y - 2),
-                         (x + 2, y - 1), (x + 2, y - 2), (x + 1, y - 2)):
-                if (j > 0 and i > 0 and 
-                    j <= self.height and i <= self.width):
-                    if self.board[self.height - j][i - 1]["alive"] == 0:
-                        self.board[self.height - j][i - 1]["alive"] = structure
+            elif (isinstance(structure, s.SubspaceBeacon)):
+                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
+                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
+                             (x + 2, y - 2)):
+                    if (j > 0 and i > 0 and 
+                        j <= self.height and i <= self.width):
+                        if self.board[self.height - j][i - 1]["alive"] == 0:
+                            self.board[self.height - j][i - 1]["alive"] = structure
+
+            elif isinstance(structure, s.ForceField):
+                for i, j in ((x - 2, y + 1), (x - 2, y + 2), (x - 1, y + 2), 
+                             (x + 2, y + 1), (x + 2, y + 2), (x + 1, y + 2),
+                             (x - 2, y - 1), (x - 2, y - 2), (x - 1, y - 2),
+                             (x + 2, y - 1), (x + 2, y - 2), (x + 1, y - 2)):
+                    if (j > 0 and i > 0 and 
+                        j <= self.height and i <= self.width):
+                        if self.board[self.height - j][i - 1]["alive"] == 0:
+                            self.board[self.height - j][i - 1]["alive"] = structure
+        else:
+            self.message = "FAILURE"
+
 
 
     def check_occupancy(self, x, y):

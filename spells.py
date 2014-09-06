@@ -62,13 +62,11 @@ class Virus(Spell):
         self.cast_range = 20
 
 class Teleport(Spell):
-    def __init__(self, dest_x, dest_y):
+    def __init__(self):
         self.name = "Teleport"
         self.probability = 0.7
         self.alignment = 0
         self.cast_range = 7
-        self.dest_x = dest_x
-        self.dest_y = dest_y
 
 class Align(Spell):
     def __init__(self, direction, level):

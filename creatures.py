@@ -27,8 +27,7 @@ class Creature(object):
         self.holograph = False
 
     def __repr__(self):
-        return ("{}\nname: {}\nprobability: {}\n"
-                "str: {}\ndef: {}\nspd: {}\n"
+        return ("{}\nname: {}\nprobability: {}\nstr: {}\ndef: {}\nspd: {}\n"
                 "res: {}\nalign: {}\n").format(type(self), self.name,
                                                self.probability,
                                                self.strength, self.defense,
@@ -48,11 +47,13 @@ class Commander(Creature):
         self.on_mount = False
 
     def __repr__(self):
-        return ("This is a commander.\n"
-                "Flight = {}\n"
-                "Mounted = {}".format(self.flight, self.on_mount))
+        return ("{}\nstr: {}\ndef: {}\nspd: {}\nres: {}\nrange: {}\n"
+                "flight: {}\n"
+                "mounted: {}".format(type(self), self.strength, self.defense, 
+                                     self.speed, self.resist, self.range, 
+                                     self.flight, self.on_mount))
 
-    def upgrade(up):
+    def upgrade(self, up):
         if up == "Symbiont":
             self.strength = max(self.strength, 6)
             self.defense = max(self.defense, 6)

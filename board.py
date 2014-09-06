@@ -45,17 +45,19 @@ class Gameboard(object):
 
 
     def beam_creature(self, x, y, creature):
-        r = random.randint(1, 10) / 10.0
-        if creature.probability >= r:
-            self.message = "SUCCESS"
-            self.board[self.height - y][x - 1]["alive"] = creature
-        else:
-            self.message = "FAILURE"
+        if self.board[self.height - y][x - 1]["alive"] == 0:
+            r = random.randint(1, 10) / 10.0
+            if creature.probability >= r:
+                self.message = "SUCCESS"
+                self.board[self.height - y][x - 1]["alive"] = creature
+            else:
+                self.message = "FAILURE"
 
     def holo_creature(self, x, y, creature):
-        self.message = "SUCCESS"
-        self.board[self.height - y][x - 1]["alive"] = creature
-        creature.holograph = True
+        if self.board[self.height - y][x - 1]["alive"] == 0:
+            self.message = "SUCCESS"
+            self.board[self.height - y][x - 1]["alive"] = creature
+            creature.holograph = True
 
     def create_structure(self, x, y, structure):
         if isinstance(structure, s.Fortress):

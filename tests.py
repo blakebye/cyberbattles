@@ -87,12 +87,27 @@ predator = c.Creature(name="Predator", probability=0.2,
                                 strength=9, defense=7, speed=5,
                                 resist=8, alignment='L')
 
-print "Hologram a Predator on half the squares, randomly"
+mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
+                                strength=9, defense=9, speed=3,
+                                resist=5, alignment='T', range=3, rstr=4)
+
+print "beam down a Predator on all the squares"
 
 for i in range(10):
     for j in range(0, 15):
-        if random.randint(1, 10) > 9:
-            gameboard.holo_creature(j + 1, i + 1, predator)
+        gameboard.beam_creature(j + 1, i + 1, predator)
+
+gameboard.print_board()
+
+print "holo down a Mech Warrior on 20% of the squares, randomly"
+for i in range(10):
+    for j in range(0, 15):
+        if random.randint(1, 10) > 8:
+            gameboard.holo_creature(j + 1, i + 1, mech_warrior)
+
+gameboard.print_board()
+
+print "create a few structures"
 
 gameboard.create_structure(2, 2, fortress)
 gameboard.create_structure(5, 2, gun_turret)
@@ -100,6 +115,17 @@ gameboard.create_structure(8, 8, subspace_beacon)
 gameboard.create_structure(15, 5, force_field)
 
 gameboard.print_board()
+
+print "Kill all creatures"
+
+for i in range(10):
+    for j in range(15):
+        if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+            gameboard.kill_creature(j + 1, i + 1)
+
+gameboard.print_board()
+
+print "Kill all structures"
 
 for i in range(10):
     for j in range(15):

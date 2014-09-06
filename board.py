@@ -1,6 +1,7 @@
 from __future__ import print_function
 import random
 import creatures as c
+import structures as s
 
 class Gameboard(object):
     def __init__(self, width, height, number_of_players):
@@ -38,9 +39,10 @@ class Gameboard(object):
         print(' ', sep='', end='')
         print('-' * (self.width * 2), sep='')
 
-    def spawn_commanders(self,):
+    def spawn_commanders(self):
         if number_of_players == 1:
-            board[4][6] = commander
+            pass
+
 
     def beam_creature(self, x, y, creature):
         r = random.randint(1, 10) / 10.0
@@ -55,9 +57,31 @@ class Gameboard(object):
         self.board[self.height - y][x - 1]["alive"] = creature
         creature.holograph = True
 
-    # def beam_structure(self, x, y, structure):
+    def create_structure(self, x, y, structure):
+        if isinstance(structure, s.Fortress):
+            if self.board[self.height - y][x - 1]["alive"] == 0:
+                self.board[self.height - y][x - 1]["alive"] = structure
+        elif (isinstance(structure, s.GunTurret) or 
+              isinstance(structure, s.SubspaceBeacon)):
+            for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
+                         (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
+                         (x + 2, y - 2)):
+                if (j > 0 and i > 0 and 
+                    j <= self.height and i <= self.width):
+                    if self.board[self.height - j][i - 1]["alive"] == 0:
+                        self.board[self.height - j][i - 1]["alive"] = structure
+        elif isinstance(structure, s.ForceField):
+            for i, j in ((x - 2, y + 1), (x - 2, y + 2), (x - 1, y + 2), 
+                         (x + 2, y + 1), (x + 2, y + 2), (x + 1, y + 2),
+                         (x - 2, y - 1), (x - 2, y - 2), (x - 1, y - 2),
+                         (x + 2, y - 1), (x + 2, y - 2), (x + 1, y - 2)):
+                if (j > 0 and i > 0 and 
+                    j <= self.height and i <= self.width):
+                    if self.board[self.height - j][i - 1]["alive"] == 0:
+                        self.board[self.height - j][i - 1]["alive"] = structure
 
-    def check_living_creature(self, x, y):
+
+    def check_occupancy(self, x, y):
         return self.board[self.height - y][x - 1]["alive"]
 
     def check_dead_creature(self, x, y):
@@ -69,8 +93,8 @@ class Gameboard(object):
             self.board[self.height - y][x - 1]["alive"]
         self.board[self.height - y][x - 1]["alive"] = 0
 
-    def kill_structure(self, x, y, structure):
-        self.board[self.height - y][x - 1] = 0
+    def kill_structure(self, x, y):
+        self.board[self.height - y][x - 1]["alive"] = 0
 
     def kill_commander(self, x, y, commander):
         self.board[self.height - y][x - 1] = 0

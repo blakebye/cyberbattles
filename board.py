@@ -130,35 +130,42 @@ class Gameboard(object):
     def beam_creature(self, x, y, creature):
         if self.board[self.height - y][x - 1]["alive"] == 0:
             r = random.randint(1, 10) / 10.0
-            if creature.probability >= r:
+            if ((creature.alignment > 0 and self.alignment > 0) or
+               (creature.alignment < 0 and self.alignment < 0)):
+                success = creature.probability + abs(self.alignment) / 10.0
+            else:
+                success = creature.probability
+
+            if success >= r:
                 self.message = "SUCCESS"
                 self.board[self.height - y][x - 1]["alive"] = creature
             else:
                 self.message = "FAILURE"
+        else:
+            print("ALREADY SOMETHING THERE")
 
     def holo_creature(self, x, y, creature):
         if self.board[self.height - y][x - 1]["alive"] == 0:
             self.message = "SUCCESS"
             self.board[self.height - y][x - 1]["alive"] = creature
             creature.holograph = True
+        else:
+            print("ALREADY SOMETHING THERE")
 
     def create_structure(self, x, y, structure):
         r = random.randint(1, 10) / 10.0
-        if structure.probability > r:
+        if ((structure.alignment > 0 and self.alignment > 0) or
+            (structure.alignment < 0 and self.alignment < 0)):
+                success = structure.probability + abs(self.alignment) / 10.0
+            else:
+                success = structure.probability
+        if success >= r:
             if isinstance(structure, s.Fortress):
                 if self.board[self.height - y][x - 1]["alive"] == 0:
                     self.board[self.height - y][x - 1]["alive"] = structure
 
-            elif (isinstance(structure, s.GunTurret)):
-                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
-                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
-                             (x + 2, y - 2)):
-                    if (j > 0 and i > 0 and 
-                        j <= self.height and i <= self.width):
-                        if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]["alive"] = structure
-
-            elif (isinstance(structure, s.SubspaceBeacon)):
+            elif (isinstance(structure, s.GunTurret) or
+                  isinstance(structure, s.SubspaceBeacon)):
                 for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
                              (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
                              (x + 2, y - 2)):
@@ -203,7 +210,12 @@ class Gameboard(object):
 
     def cast_spell(self, x, y, spell):
         r = random.randint(1, 10) / 10.0
-        if spell.probability > r:
+        if ((spell.alignment > 0 and self.alignment > 0) or
+            (spell.alignment < 0 and self.alignment < 0)):
+                success = spell.probability + abs(self.alignment) / 10.0
+            else:
+                success = spell.probability
+        if success >= r:
             if isinstance(spell, sp.HoloDetect):
                 if self.board[self.height - y][x - 1]["alive"].holograph == True:
                     self.board[self.height - y][x - 1]["alive"] = 0

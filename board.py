@@ -210,10 +210,10 @@ class Gameboard(object):
                 else:
                     pass
             elif isinstance(spell, sp.Mutate):
-                # requires all creatures to be implementes as cards
+                # requires all creatures to be implemented as cards
                 pass
             elif isinstance(spell, sp.Hypnotize):
-                # requires commanders be implemented
+                # requires creatures be implemented as commanders possession
                 pass
 
             elif isinstance(spell, sp.Resurrect):
@@ -243,8 +243,10 @@ class Gameboard(object):
                     self.kill_creature(x, y)
 
             elif isinstance(spell, sp.Teleport):
-                # requires commander be implemented
-                pass
+                if isinstance(self.check_occupancy(x, y), c.Commander):
+                    if self.check_occupancy(spell.dest_x, spell.dest_y) == 0:
+                        # teleport is tricky. need to make line of sight code
+                        pass
 
             elif isinstance(spell, sp.Align):
                 if spell.direction == "Technology":
@@ -262,7 +264,7 @@ class Gameboard(object):
         # TECH WILL BE POSITIVE
         self.alignment += 1 * level
 
-    def end_round(self):
+    def next_round(self):
         if self.round_count >= 35:
             message = "Game Over, result is DRAW"
         else:

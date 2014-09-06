@@ -64,10 +64,12 @@ class Gameboard(object):
             self.board[self.height / 2][self.width / 2]["alive"] = c.Commander()
 
         elif self.number_of_players == 2:
-            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
+            self.board[int(round(self.height * 4.0 / 10.0))]\
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height * 4.0 / 10.0))]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
 
         elif self.number_of_players == 3:
             self.board[self.height - 1][0]["alive"] = c.Commander()
@@ -75,40 +77,54 @@ class Gameboard(object):
             self.board[0][self.width / 2]["alive"] = c.Commander()
 
         elif self.number_of_players == 4:
-            self.board[self.height - 1][int(round(self.width / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[self.height - 1][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][int(round(self.width / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
 
         elif self.number_of_players == 5:
-            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height * 4.0 / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][self.width / 2]["alive"] = \
-            c.Commander()
-            self.board[self.height - 1][int(round(self.width * 4.0 / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[self.height - 1][int(round(self.width * 10.0 / 15.0))]["alive"] = \
-            c.Commander()
+            self.board[int(round(self.height * 4.0 / 10.0))]\
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height * 4.0 / 10.0))]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [self.width / 2]["alive"] = \
+                      c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width * 4.0 / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width * 10.0 / 15.0))]["alive"] = \
+                      c.Commander()
 
         elif self.number_of_players == 6:
-            self.board[self.height - 1][int(round(self.width / 15))]["alive"] = \
-            c.Commander()
-            self.board[self.height - 1][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][int(round(self.width / 15))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][int(round(self.width * 13.0 / 15.0))]["alive"] = \
-            c.Commander()
-            self.board[int(round(self.height / 10.0))][self.width / 2]["alive"] = \
-            c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width / 15))]["alive"] = \
+                      c.Commander()
+            self.board[self.height - 1]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [int(round(self.width / 15))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      c.Commander()
+            self.board[int(round(self.height / 10.0))]\
+                      [self.width / 2]["alive"] = \
+                      c.Commander()
             self.board[self.height - 1][self.width / 2]["alive"] = \
-            c.Commander()
+                      c.Commander()
             
 
     def beam_creature(self, x, y, creature):

@@ -26,8 +26,7 @@ class Gameboard(object):
         elif self.alignment < 0:
             align = "Lifeforce %i" % abs(self.alignment)
         print("ALIGNMENT: %s" % align)
-        print(' ', sep='', end='')
-        print('-' * (self.width * 2 - 1), sep='')
+        print('-' * (self.width * 4 + 1), sep='')
         for row in range(len(self.board)):
             print('|', end='')
             list_of_elements = []
@@ -41,25 +40,24 @@ class Gameboard(object):
                 counter += 1
                 if counter == self.width:
                     if square["alive"] != 0:
-                        print ("{}".format(square["alive"].name[0]), 
-                               sep='', end='')
+                        print (" {}".format(square["alive"].name[0]), 
+                               sep='', end=' ')
                     elif square["dead"] != 0:
-                        print ("{}".format(square["dead"].name[0].lower()), 
-                               sep='', end='')
+                        print (" {}".format(square["dead"].name[0].lower()), 
+                               sep='', end=' ')
                     else:
-                        print ("{}".format(" "), sep='', end='')
+                        print (" {}".format(" "), sep='', end=' ')
                 else:
                     if square["alive"] != 0:
-                        print ("{}".format(square["alive"].name[0]), 
-                               sep='', end=' ')
+                        print (" {}".format(square["alive"].name[0]), 
+                               sep='', end=' |')
                     elif square["dead"] != 0:
-                        print ("{}".format(square["dead"].name[0].lower()), 
-                               sep='', end=' ')
+                        print (" {}".format(square["dead"].name[0].lower()), 
+                               sep='', end=' |')
                     else:
-                        print ("{}".format(" "), sep='', end=' ')
+                        print (" {}".format(" "), sep='', end=' |')
             print ('|')
-        print(' ', sep='', end='')
-        print('-' * (self.width * 2), sep='')
+            print('-' * (self.width * 4 + 1), sep='')
 
     def spawn_commanders(self):
         if self.number_of_players == 1:

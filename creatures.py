@@ -37,6 +37,18 @@ class Creature(object):
 
 class Commander(Creature):
     """This creature is a commander."""
+    def __init__(self):
+        self.strength = 5
+        self.defense = 5
+        self.speed = 1
+        self.resist = 7
+        self.flight = False
+        self.on_mount = False
+
+    def __repr__(self):
+        return ("This is a commander.\n"
+                "Flight = {}\n"
+                "Mounted = {}".format(self.flight, self.on_mount))
 
 class RangedCreature(Creature):
     """This creature can attack from range and melee"""
@@ -93,9 +105,9 @@ class Mount(Creature):
         self.mount = True
         self.occupied = False
 
-  def __repr__(self):
-      return (super(Mount, self).__repr__() +
-      "Mount: {}\nOccupied: {}\n").format(self.mount, self.occupied)
+    def __repr__(self):
+        return (super(Mount, self).__repr__() +
+        "Mount: {}\nOccupied: {}\n").format(self.mount, self.occupied)
 
 class FlyingMount(Mount, FlyingCreature):
     """This creature can hold your commander and fly"""
@@ -138,4 +150,4 @@ class FlyingRangedMount(Mount, FlyingCreature, RangedCreature):
         self.occupied = False
 
     def __repr__(self):
-        return (super(FlyingRangedMount, self).__repr__())
+            return (super(FlyingRangedMount, self).__repr__())

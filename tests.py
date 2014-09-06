@@ -4,9 +4,10 @@ import board as b
 import structures as s
 import spells as sp
 
-# gameboard = b.Gameboard(15, 10, 5)
-# gameboard.spawn_commanders()
-# gameboard.print_board()
+gameboard = b.Gameboard(15, 10, 5)
+gameboard.spawn_commanders()
+gameboard.upgrade_commander(2, 6, "Symbiont")
+gameboard.print_board()
 
 # drone = c.Creature(name="Drone", probability=0.9, strength=1, defense=3,
 #                  speed=4, resist=4, alignment="T")

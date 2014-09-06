@@ -179,8 +179,6 @@ class Gameboard(object):
         else:
             self.message = "FAILURE"
 
-
-
     def check_occupancy(self, x, y):
         return self.board[self.height - y][x - 1]["alive"]
 
@@ -204,53 +202,57 @@ class Gameboard(object):
             self.check_occupancy(x, y).upgrade(up)
 
     def cast_spell(self, x, y, spell):
-        if isinstance(spell, sp.HoloDetect):
-            if self.board[self.height - y][x - 1]["alive"].holograph == True:
-                self.board[self.height - y][x - 1]["alive"] = 0
-            else:
+        r = random.randint(1, 10) / 10.0
+        if spell.probability > r:
+            if isinstance(spell, sp.HoloDetect):
+                if self.board[self.height - y][x - 1]["alive"].holograph == True:
+                    self.board[self.height - y][x - 1]["alive"] = 0
+                else:
+                    pass
+            elif isinstance(spell, sp.Mutate):
+                # requires all creatures to be implementes as cards
                 pass
-        elif isinstance(spell, sp.Mutate):
-            # requires all creatures to be implementes as cards
-            pass
-        elif isinstance(spell, sp.Hypnotize):
-            # requires commanders be implemented
-            pass
+            elif isinstance(spell, sp.Hypnotize):
+                # requires commanders be implemented
+                pass
 
-        elif isinstance(spell, sp.Resurrect):
-            self.board[self.height - y][x - 1]["alive"] = \
-            self.board[self.height - y][x - 1]["dead"]
+            elif isinstance(spell, sp.Resurrect):
+                self.board[self.height - y][x - 1]["alive"] = \
+                self.board[self.height - y][x - 1]["dead"]
 
-            self.board[self.height - y][x - 1]["dead"] = 0
+                self.board[self.height - y][x - 1]["dead"] = 0
 
-        elif isinstance(spell, sp.Disrupt):
-            r = random.randint(5, 13)
-            if (self.check_occupancy(x, y).resist +
-                self.check_occupancy(x, y).defense) < r:
-                self.kill_creature(x, y)
+            elif isinstance(spell, sp.Disrupt):
+                r = random.randint(5, 13)
+                if (self.check_occupancy(x, y).resist +
+                    self.check_occupancy(x, y).defense) < r:
+                    self.kill_creature(x, y)
 
-        elif isinstance(spell, sp.Disintegrate):
-            r = random.randint(6, 17)
-            if (self.check_occupancy(x, y).resist +
-                self.check_occupancy(x, y).defense) < r:
-                self.kill_creature(x, y)
+            elif isinstance(spell, sp.Disintegrate):
+                r = random.randint(6, 17)
+                if (self.check_occupancy(x, y).resist +
+                    self.check_occupancy(x, y).defense) < r:
+                    self.kill_creature(x, y)
 
-        elif isinstance(spell, sp.EMP):
-            if self.check_occupancy(x, y).alignment > 0:
-                self.kill_creature(x, y)
+            elif isinstance(spell, sp.EMP):
+                if self.check_occupancy(x, y).alignment > 0:
+                    self.kill_creature(x, y)
 
-        elif isinstance(spell, sp.Virus):
-            if self.check_occupancy(x, y).alignment < 0:
-                self.kill_creature(x, y)
+            elif isinstance(spell, sp.Virus):
+                if self.check_occupancy(x, y).alignment < 0:
+                    self.kill_creature(x, y)
 
-        elif isinstance(spell, sp.Teleport):
-            # requires commander be implemented
-            pass
+            elif isinstance(spell, sp.Teleport):
+                # requires commander be implemented
+                pass
 
-        elif isinstance(spell, sp.Align):
-            if spell.direction == "Technology":
-                self.align_tech(spell.level)
-            if spell.direction == "Lifeforce":
-                self.align_life(spell.level)
+            elif isinstance(spell, sp.Align):
+                if spell.direction == "Technology":
+                    self.align_tech(spell.level)
+                if spell.direction == "Lifeforce":
+                    self.align_life(spell.level)
+        else:
+            self.message("FAILURE")
 
     def align_life(self, level):
         # LIFE WILL BE NEGATIVE

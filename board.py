@@ -132,11 +132,16 @@ class Gameboard(object):
             self.board[self.height - y][x - 1]["dead"] = 0
 
         elif isinstance(spell, sp.Disrupt):
-            # think about it for a bit
-            pass
+            r = random.randint(5, 13)
+            if (self.check_occupancy(x, y).resist +
+                self.check_occupancy(x, y).defense) < r:
+                self.kill_creature(x, y)
+
         elif isinstance(spell, sp.Disintegrate):
-            # think about it for a bit
-            pass
+            r = random.randint(6, 17)
+            if (self.check_occupancy(x, y).resist +
+                self.check_occupancy(x, y).defense) < r:
+                self.kill_creature(x, y)
 
         elif isinstance(spell, sp.EMP):
             if self.check_occupancy(x, y).alignment > 0:

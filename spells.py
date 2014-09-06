@@ -59,16 +59,10 @@ class Teleport(Spell):
         self.probability = 0.7
         self.alignment = 0
 
-class AlignLife(Spell):
-    def __init__(self, level):
-        self.name = "Lifeforce %i" % level
+class Align(Spell):
+    def __init__(self, direction, level):
+        self.name = "%s %i" % (direction, level)
+        self.direction = direction
         self.level = level
         self.probability = 1.0 - level * .2
         self.alignment = -1
-
-class AlignTech(Spell):
-    def __init__(self, level):
-        self.name = "Technology %i" % level
-        self.level = level
-        self.probability = 1.0 - level * .2
-        self.alignment = 1

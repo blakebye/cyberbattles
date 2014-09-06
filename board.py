@@ -155,12 +155,11 @@ class Gameboard(object):
             # requires commander be implemented
             pass
 
-        elif isinstance(spell, sp.AlignTech):
-            self.align_tech(spell.level)
-
-        elif isinstance(spell, sp.AlignLife):
-            self.align_life(spell.level)
-
+        elif isinstance(spell, sp.Align):
+            if spell.direction == "Technology":
+                self.align_tech(spell.level)
+            if spell.direction == "Lifeforce":
+                self.align_life(spell.level)
 
     def align_life(self, level):
         # LIFE WILL BE NEGATIVE

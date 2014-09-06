@@ -167,29 +167,28 @@ floating_eye = c.FlyingCreature(name="Floating Eye", probability=0.5, strength=4
 
 # print "Align Life 2"
 
-# alignlife2 = sp.AlignLife(2)
-# gameboard.cast_spell(j + 1, i + 1, alignlife2)
+# alignlife2 = sp.Align("Lifeforce", 2)
+# gameboard.cast_spell(1, 1, alignlife2)
 
 # gameboard.print_board()
 
 # print "Align Life 1"
 
-# alignlife1 = sp.AlignLife(1)
-# gameboard.cast_spell(j + 1, i + 1, alignlife1)
+# alignlife1 = sp.Align("Lifeforce", 1)
+# gameboard.cast_spell(1, 1, alignlife1)
 
 # gameboard.print_board()
 
 # print "Align Tech 2"
 
-# aligntech2 = sp.AlignTech(2)
-# gameboard.cast_spell(j + 1, i + 1, aligntech2)
+# aligntech2 = sp.Align("Technology", 2)
+# gameboard.cast_spell(1, 1, aligntech2)
 
 # gameboard.print_board()
 
 # print "Align Tech 2"
 
-# aligntech2 = sp.AlignTech(2)
-# gameboard.cast_spell(j + 1, i + 1, aligntech2)
+# gameboard.cast_spell(1, 1, aligntech2)
 
 # gameboard.print_board()
 

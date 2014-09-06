@@ -2,6 +2,7 @@ import random
 import creatures as c
 import board as b
 import structures as s
+import spells as sp
 
 # drone = c.Creature(name="Drone", probability=0.9, strength=1, defense=3,
 #                  speed=4, resist=4, alignment="T")
@@ -85,55 +86,111 @@ force_field = s.ForceField()
 
 predator = c.Creature(name="Predator", probability=0.2,
                                 strength=9, defense=7, speed=5,
-                                resist=8, alignment='L')
+                                resist=8, alignment=-2)
 
 mech_warrior = c.RangedCreature(name="Mech Warrior", probability=0.1,
                                 strength=9, defense=9, speed=3,
-                                resist=5, alignment='T', range=3, rstr=4)
+                                resist=5, alignment=2, range=3, rstr=4)
 
 print "beam down a Predator on all the squares"
 
 for i in range(10):
-    for j in range(0, 15):
+    for j in range(15):
         gameboard.beam_creature(j + 1, i + 1, predator)
 
 gameboard.print_board()
 
 print "holo down a Mech Warrior on 20% of the squares, randomly"
 for i in range(10):
-    for j in range(0, 15):
+    for j in range(15):
         if random.randint(1, 10) > 8:
             gameboard.holo_creature(j + 1, i + 1, mech_warrior)
 
 gameboard.print_board()
 
-print "create a few structures, randomly"
-
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, fortress)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, gun_turret)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, subspace_beacon)
-i, j = random.randint(1, 15), random.randint(1, 10)
-gameboard.create_structure(i, j, force_field)
-
-gameboard.print_board()
-
-print "Kill all creatures"
-
+virus = sp.Virus()
+print "cast virus on every square on the board"
 for i in range(10):
     for j in range(15):
         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
-            gameboard.kill_creature(j + 1, i + 1)
+            gameboard.cast_spell(j + 1, i + 1, virus)
 
 gameboard.print_board()
 
-print "Kill all structures"
+emp = sp.EMP()
+print "cast emp on every square on the board"
+for i in range(10):
+    for j in range(15):
+        if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+            gameboard.cast_spell(j + 1, i + 1, emp)
+
+gameboard.print_board()
+
+print "Resurrect the whole board"
+resurrect = sp.Resurrect()
 
 for i in range(10):
     for j in range(15):
-        if isinstance((gameboard.check_occupancy(j + 1, i + 1)), s.Structure):
-            gameboard.kill_structure(j + 1, i + 1)
+        gameboard.cast_spell(j + 1, i + 1, resurrect)
 
 gameboard.print_board()
+
+# print "Align Life 2"
+
+# alignlife2 = sp.AlignLife(2)
+# gameboard.cast_spell(j + 1, i + 1, alignlife2)
+
+# gameboard.print_board()
+
+# print "Align Life 1"
+
+# alignlife1 = sp.AlignLife(1)
+# gameboard.cast_spell(j + 1, i + 1, alignlife1)
+
+# gameboard.print_board()
+
+# print "Align Tech 2"
+
+# aligntech2 = sp.AlignTech(2)
+# gameboard.cast_spell(j + 1, i + 1, aligntech2)
+
+# gameboard.print_board()
+
+# print "Align Tech 2"
+
+# aligntech2 = sp.AlignTech(2)
+# gameboard.cast_spell(j + 1, i + 1, aligntech2)
+
+# gameboard.print_board()
+
+# print "create a few structures, randomly"
+
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, fortress)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, gun_turret)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, subspace_beacon)
+# i, j = random.randint(1, 15), random.randint(1, 10)
+# gameboard.create_structure(i, j, force_field)
+
+# gameboard.print_board()
+
+# print "Kill all creatures"
+
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), c.Creature):
+#             gameboard.kill_creature(j + 1, i + 1)
+
+# gameboard.print_board()
+
+# print "Kill all structures"
+
+# for i in range(10):
+#     for j in range(15):
+#         if isinstance((gameboard.check_occupancy(j + 1, i + 1)), s.Structure):
+#             gameboard.kill_structure(j + 1, i + 1)
+
+
+# gameboard.print_board()

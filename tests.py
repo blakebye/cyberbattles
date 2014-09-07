@@ -1,12 +1,7 @@
 import board
 gameboard = board.Gameboard(15, 10, 5)
 gameboard.spawn_commanders()
-
-i = 0
-for x in gameboard.occupant(5, 1).hand:
-    i += 1
-    print "{}".format(x) ,
-    if i % 3 == 0:
-        print
+print gameboard.commander1
+print gameboard.commander1.hand[6].commander
 
 gameboard.print_board()

@@ -15,6 +15,12 @@ class Gameboard(object):
         self.width = width
         self.height = height
         self.number_of_players = number_of_players
+        self.commander1 = 0
+        self.commander2 = 0
+        self.commander3 = 0
+        self.commander4 = 0
+        self.commander5 = 0
+        self.commander6 = 0
         self.board = []
 
         # each spot in the w x h grid should be filled with a living/dead
@@ -91,79 +97,117 @@ class Gameboard(object):
         """
         if self.number_of_players == 1:
             # centralize the only player, for testing things
-            self.board[self.height / 2][self.width / 2]["alive"] = cards.Commander()
+            self.commander1 = cards.Commander()
+            self.board[self.height / 2][self.width / 2]["alive"] = \
+            self.commander1
 
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
+            self.commander1 = cards.Commander()
+            self.commander2 = cards.Commander()
+
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander1
+
             self.board[int(round(self.height * 4.0 / 10.0))]\
-                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      [int(round(self.width * 13.0 / 15.0))]\
+                      ["alive"] = self.commander2
 
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
             # and one centrally located along the top
-            self.board[self.height - 1][0]["alive"] = cards.Commander()
-            self.board[self.height - 1][self.width - 1]["alive"] = cards.Commander()
-            self.board[0][self.width / 2]["alive"] = cards.Commander()
+            self.commander1 = cards.Commander()
+            self.commander2 = cards.Commander()
+            self.commander3 = cards.Commander()
+
+            self.board[self.height - 1][0]["alive"] = self.commander1
+
+            self.board[self.height - 1][self.width - 1]["alive"] = \
+            self.commander2
+
+            self.board[0][self.width / 2]["alive"] = self.commander3
 
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
+            self.commander1 = cards.Commander()
+            self.commander2 = cards.Commander()
+            self.commander3 = cards.Commander()
+            self.commander4 = cards.Commander()
+
             self.board[self.height - 1]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander1
+
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander2
+
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander3
+
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander4
 
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
             # setup, with 1 near the top 3-player commander and 2 along the
             # bottom, at 1/3 intervals
+            self.commander1 = cards.Commander()
+            self.commander2 = cards.Commander()
+            self.commander3 = cards.Commander()
+            self.commander4 = cards.Commander()
+            self.commander5 = cards.Commander()
+
             self.board[int(round(self.height * 4.0 / 10.0))]\
-                      [int(round(self.width / 15.0))]["alive"] = \
-                      cards.Commander()
+                      [int(round(self.width / 15.0))]["alive"] = self.commander1
+
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander2
+
             self.board[int(round(self.height / 10.0))]\
-                      [self.width / 2]["alive"] = \
-                      cards.Commander()
+                      [self.width / 2]["alive"] = self.commander3
+
             self.board[self.height - 1]\
                       [int(round(self.width * 4.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander4
+
             self.board[self.height - 1]\
                       [int(round(self.width * 10.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander5
 
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
             # setup and one commander symmetrically on the bottom
+            self.commander1 = cards.Commander()
+            self.commander2 = cards.Commander()
+            self.commander3 = cards.Commander()
+            self.commander4 = cards.Commander()
+            self.commander5 = cards.Commander()
+            self.commander6 = cards.Commander()
+
             self.board[self.height - 1]\
-                      [int(round(self.width / 15))]["alive"] = \
-                      cards.Commander()
+                      [int(round(self.width / 15))]["alive"] = self.commander1
+
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander2
+
             self.board[int(round(self.height / 10.0))]\
-                      [int(round(self.width / 15))]["alive"] = \
-                      cards.Commander()
+                      [int(round(self.width / 15))]["alive"] = self.commander3
+
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      cards.Commander()
+                      self.commander4
+
             self.board[int(round(self.height / 10.0))]\
-                      [self.width / 2]["alive"] = \
-                      cards.Commander()
+                      [self.width / 2]["alive"] = self.commander5
+
             self.board[self.height - 1][self.width / 2]["alive"] = \
-                      cards.Commander()
+                      self.commander6
             
 
     def beam_creature(self, x, y, creature):
@@ -294,7 +338,7 @@ class Gameboard(object):
             success = spell.probability
         if success >= r:
             # holodetect will instantly kill a hologram on the targetted square
-            if isinstance(spell, sp.HoloDetect):
+            if isinstance(spell, cards.HoloDetect):
                 if self.board[self.height - y][x - 1]["alive"].holograph == True:
                     self.board[self.height - y][x - 1]["alive"] = 0
                 else:
@@ -302,18 +346,18 @@ class Gameboard(object):
 
             # mutate will change a creature on the targetted
             # square into another random creature
-            elif isinstance(spell, sp.Mutate):
+            elif isinstance(spell, cards.Mutate):
                 # requires all creatures to be implemented as cards
                 pass
 
             # hypnotize will change the owner of
             # a creature on the targetted square
-            elif isinstance(spell, sp.Hypnotize):
+            elif isinstance(spell, cards.Hypnotize):
                 # requires creatures be implemented as commanders possession
                 pass
 
             # resurrect will turn a corpse into a living creature again
-            elif isinstance(spell, sp.Resurrect):
+            elif isinstance(spell, cards.Resurrect):
                 self.board[self.height - y][x - 1]["alive"] = \
                 self.board[self.height - y][x - 1]["dead"]
 
@@ -321,14 +365,14 @@ class Gameboard(object):
                 self.board[self.height - y][x - 1]["dead"] = 0
 
             # disrupt has a small chance to instantly kill a creature
-            elif isinstance(spell, sp.Disrupt):
+            elif isinstance(spell, cards.Disrupt):
                 r = random.randint(5, 13)
                 if (self.occupant(x, y).resist +
                     self.occupant(x, y).defense) < r:
                     self.kill_creature(x, y)
 
             # disrupt has a medium chance to instantly kill a creature
-            elif isinstance(spell, sp.Disintegrate):
+            elif isinstance(spell, cards.Disintegrate):
                 r = random.randint(7, 17)
                 if (self.occupant(x, y).resist +
                     self.occupant(x, y).defense) < r:
@@ -336,24 +380,24 @@ class Gameboard(object):
 
             # emp can instantly kill any tech aligned creature if it succeeds
             # it can also target a commander to kill all his tech units
-            elif isinstance(spell, sp.EMP):
+            elif isinstance(spell, cards.EMP):
                 if self.occupant(x, y).alignment > 0:
                     self.kill_creature(x, y)
 
             # virus can instantly kill any life aligned creature if it succeeds
             # it can also target a commander to kill all his life units
-            elif isinstance(spell, sp.Virus):
+            elif isinstance(spell, cards.Virus):
                 if self.occupant(x, y).alignment < 0:
                     self.kill_creature(x, y)
 
             # teleport can move your commander up to 7 squares away
-            elif isinstance(spell, sp.Teleport):
+            elif isinstance(spell, cards.Teleport):
                 # teleport is tricky. need to make line of sight code
                 pass
 
             # align isn't really a spell, but instead of making a whole
             # module for it, it fits well here to alter the board.
-            elif isinstance(spell, sp.Align):
+            elif isinstance(spell, cards.Align):
                 if spell.direction == "Technology":
                     self.align_tech(spell.level)
                 if spell.direction == "Lifeforce":

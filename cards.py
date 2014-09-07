@@ -74,50 +74,65 @@ class Commander(Creature):
         elif isinstance(card, Structure):
             # TODO - MAKE SURE STRUCTURES HAVE TO PASS PROBABILITY
             self.hand[self.hand.index(card)] = 0
-            if isinstance(card, Fortress):
-                # TODO - FORTRESS NEEDS A TARGETTING SUBSKILL
+
+            # let board alignment influence structure probability
+            if self.gameboard.alignment > 0:
+                success = abs(self.gameboard.alignment / 10.0 +
+                              card.probability)
+            else:
+                success = card.probability
+
+            r = random.randint(1, 10) / 10
+            if success >= r:
+
+                if isinstance(card, Fortress):
+                    # TODO - FORTRESS NEEDS A TARGETTING SUBSKILL
+                    pass
+
+                elif isinstance(card, ForceField):
+                    for i, j in ((self.x - 2, self.y + 1), 
+                                 (self.x - 2, self.y + 2), 
+                                 (self.x - 1, self.y + 2), 
+                                 (self.x + 2, self.y + 1),
+                                 (self.x + 2, self.y + 2), 
+                                 (self.x + 1, self.y + 2),
+                                 (self.x - 2, self.y - 1), 
+                                 (self.x - 2, self.y - 2), 
+                                 (self.x - 1, self.y - 2), 
+                                 (self.x + 2, self.y - 1),
+                                 (self.x + 2, self.y - 2), 
+                                 (self.x + 1, self.y - 2)):
+                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                            i <= self.gameboard.width):
+                            if self.gameboard.occupant(i, j) == 0:
+                                self.gameboard.board[self.gameboard.height - j]\
+                                [i - 1]["alive"] = card
+
+                elif isinstance(card, GunTurret):
+                    for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
+                                 (self.x, self.y - 2), (self.x - 2, self.y + 2), 
+                                 (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
+                                 (self.x + 2, self.y - 2)):
+                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                            i <= self.gameboard.width):
+                            if self.gameboard.occupant(i, j) == 0:
+                                self.gameboard.board[self.gameboard.height - j]\
+                                [i - 1]["alive"] = GunTurret()
+
+                elif isinstance(card, SubspaceBeacon):
+                    for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
+                                 (self.x, self.y - 2), (self.x - 2, self.y + 2), 
+                                 (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
+                                 (self.x + 2, self.y - 2)):
+                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                            i <= self.gameboard.width):
+                            if self.gameboard.occupant(i, j) == 0:
+                                self.gameboard.board[self.gameboard.height - j]\
+                                [i - 1]["alive"] = SubspaceBeacon()
+
+            else:
+                # structure failed
                 pass
-
-            elif isinstance(card, ForceField):
-                for i, j in ((self.x - 2, self.y + 1), 
-                             (self.x - 2, self.y + 2), 
-                             (self.x - 1, self.y + 2), 
-                             (self.x + 2, self.y + 1),
-                             (self.x + 2, self.y + 2), 
-                             (self.x + 1, self.y + 2),
-                             (self.x - 2, self.y - 1), 
-                             (self.x - 2, self.y - 2), 
-                             (self.x - 1, self.y - 2), 
-                             (self.x + 2, self.y - 1),
-                             (self.x + 2, self.y - 2), 
-                             (self.x + 1, self.y - 2)):
-                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                        i <= self.gameboard.width):
-                        if self.gameboard.occupant(i, j) == 0:
-                            self.gameboard.board[self.gameboard.height - j]\
-                            [i - 1]["alive"] = card
-
-            elif isinstance(card, GunTurret):
-                for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
-                             (self.x, self.y - 2), (self.x - 2, self.y + 2), 
-                             (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
-                             (self.x + 2, self.y - 2)):
-                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                        i <= self.gameboard.width):
-                        if self.gameboard.occupant(i, j) == 0:
-                            self.gameboard.board[self.gameboard.height - j]\
-                            [i - 1]["alive"] = GunTurret()
-
-            elif isinstance(card, SubspaceBeacon):
-                for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
-                             (self.x, self.y - 2), (self.x - 2, self.y + 2), 
-                             (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
-                             (self.x + 2, self.y - 2)):
-                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                        i <= self.gameboard.width):
-                        if self.gameboard.occupant(i, j) == 0:
-                            self.gameboard.board[self.gameboard.height - j]\
-                            [i - 1]["alive"] = SubspaceBeacon()
 
         elif isinstance(card, Spell):
             if isinstance(card, HoloDetect):
@@ -404,9 +419,7 @@ class Spideroid(Creature):
         super(Spideroid, self).__init__("Spideroid", 0.2, 8, 8, 6, 8, 2)
 
 class Structure(object):
-    def __init__(self, name, probability):
-        self.name = name
-        self.probability = probability
+    def __init__(self):
         self.alignment = 1
         self.x = 0
         self.y = 0
@@ -414,21 +427,25 @@ class Structure(object):
 
 class Fortress(Structure):
     def __init__(self):
+        super(Fortress, self).__init__()
         self.name = "Fortress"
         self.probability = 0.6
 
 class GunTurret(Structure):
     def __init__(self):
+        super(GunTurret, self).__init__()
         self.name = "Gun Turret"
         self.probability = 0.5
 
 class SubspaceBeacon(Structure):
     def __init__(self):
+        super(SubspaceBeacon, self).__init__()
         self.name = "Subspace Beacon"
         self.probability = 0.9
 
 class ForceField(Structure):
     def __init__(self):
+        super(ForceField, self).__init__()
         self.name = "Force Field"
         self.probability = 0.9
 

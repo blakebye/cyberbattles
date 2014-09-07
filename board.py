@@ -184,6 +184,7 @@ class Gameboard(object):
             if success >= r:
                 self.message = "SUCCESS"
                 self.board[self.height - y][x - 1]["alive"] = creature
+                creature.x, creature.y = x, y
             else:
                 self.message = "CREATURE FAILURE"
         else:
@@ -196,6 +197,7 @@ class Gameboard(object):
             self.message = "SUCCESS"
             self.board[self.height - y][x - 1]["alive"] = creature
             creature.holograph = True
+            creature.x, creature.y = x, y
         else:
             print("ALREADY SOMETHING THERE")
 
@@ -214,15 +216,25 @@ class Gameboard(object):
                     self.board[self.height - y][x - 1]["alive"] = structure
 
             # gun turret and subspace beacon share a creation pattern
-            elif (isinstance(structure, s.GunTurret) or
-                  isinstance(structure, s.SubspaceBeacon)):
+            elif isinstance(structure, s.GunTurret):
                 for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
                              (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
                              (x + 2, y - 2)):
                     if (j > 0 and i > 0 and 
                         j <= self.height and i <= self.width):
                         if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]["alive"] = structure
+                            self.board[self.height - j][i - 1]\
+                                      ["alive"] = s.GunTurret()
+
+            elif isinstance(structure, s.SubspaceBeacon):
+                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
+                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
+                             (x + 2, y - 2)):
+                    if (j > 0 and i > 0 and 
+                        j <= self.height and i <= self.width):
+                        if self.board[self.height - j][i - 1]["alive"] == 0:
+                            self.board[self.height - j][i - 1]\
+                                      ["alive"] = s.SubspaceBeacon()
 
             # force field has a unique creation pattern
             elif isinstance(structure, s.ForceField):
@@ -233,7 +245,8 @@ class Gameboard(object):
                     if (j > 0 and i > 0 and 
                         j <= self.height and i <= self.width):
                         if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]["alive"] = structure
+                            self.board[self.height - j][i - 1]\
+                                      ["alive"] = s.ForceField()
         else:
             self.message = "STRUCTURE FAILURE"
 

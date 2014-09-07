@@ -299,55 +299,6 @@ class Gameboard(object):
         else:
             print("ALREADY SOMETHING THERE")
 
-    def create_structure(self, x, y, structure):
-        # if the board alignment is technology, give the structure
-        # a boost over it's normal probability to be created
-        r = random.randint(1, 10) / 10.0
-        if self.alignment > 0:
-            success = structure.probability + self.alignment / 10.0
-        else:
-            success = structure.probability
-        if success >= r:
-            # fortress is a one square structure
-            if isinstance(structure, s.Fortress):
-                if self.board[self.height - y][x - 1]["alive"] == 0:
-                    self.board[self.height - y][x - 1]["alive"] = structure
-
-            # gun turret and subspace beacon share a creation pattern
-            elif isinstance(structure, s.GunTurret):
-                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
-                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
-                             (x + 2, y - 2)):
-                    if (j > 0 and i > 0 and 
-                        j <= self.height and i <= self.width):
-                        if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]\
-                                      ["alive"] = s.GunTurret()
-
-            elif isinstance(structure, s.SubspaceBeacon):
-                for i, j in ((x - 1, y), (x + 1, y), (x, y + 2), (x, y - 2), 
-                             (x - 2, y + 2), (x + 2, y + 2), (x - 2, y - 2), 
-                             (x + 2, y - 2)):
-                    if (j > 0 and i > 0 and 
-                        j <= self.height and i <= self.width):
-                        if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]\
-                                      ["alive"] = s.SubspaceBeacon()
-
-            # force field has a unique creation pattern
-            elif isinstance(structure, s.ForceField):
-                for i, j in ((x - 2, y + 1), (x - 2, y + 2), (x - 1, y + 2), 
-                             (x + 2, y + 1), (x + 2, y + 2), (x + 1, y + 2),
-                             (x - 2, y - 1), (x - 2, y - 2), (x - 1, y - 2),
-                             (x + 2, y - 1), (x + 2, y - 2), (x + 1, y - 2)):
-                    if (j > 0 and i > 0 and 
-                        j <= self.height and i <= self.width):
-                        if self.board[self.height - j][i - 1]["alive"] == 0:
-                            self.board[self.height - j][i - 1]\
-                                      ["alive"] = s.ForceField()
-        else:
-            self.message = "STRUCTURE FAILURE"
-
     def occupant(self, x, y):
         """This function takes a square and returns the living unit on it."""
         return self.board[self.height - y][x - 1]["alive"]
@@ -373,105 +324,9 @@ class Gameboard(object):
     def kill_commander(self, x, y, commander):
         """This function takes a square and destroys the commander on it."""
         # self.board[self.height - y][x - 1]["alive"] = 0
+        # go through the commander's hand and kill everything
+        # go through the commander's creatures and kill each of them
         pass
-
-    def upgrade_commander(self, x, y, up):
-        """
-        This function takes a square and an upgrade type and upgrades the
-        commander on that square with that upgrade.
-        """
-        if isinstance(self.occupant(x, y), cards.Commander):
-            self.occupant(x, y).upgrade(up)
-
-    def cast_spell(self, x, y, spell):
-        """
-        This function takes a square and a spell and casts that spell onto that
-        square.
-        """
-        # if the spell and board alignment are the same, give the spell
-        # a bonus chance to be cast successfully
-        r = random.randint(1, 10) / 10.0
-        if ((spell.alignment > 0 and self.alignment > 0) or
-            (spell.alignment < 0 and self.alignment < 0)):
-            success = spell.probability + abs(self.alignment) / 10.0
-        else:
-            success = spell.probability
-        if success >= r:
-            # holodetect will instantly kill a hologram on the targetted square
-            if isinstance(spell, cards.HoloDetect):
-                if self.board[self.height - y][x - 1]["alive"].holograph == True:
-                    self.board[self.height - y][x - 1]["alive"] = 0
-                else:
-                    pass
-
-            # mutate will change a creature on the targetted
-            # square into another random creature
-            elif isinstance(spell, cards.Mutate):
-                # requires all creatures to be implemented as cards
-                pass
-
-            # hypnotize will change the owner of
-            # a creature on the targetted square
-            elif isinstance(spell, cards.Hypnotize):
-                # requires creatures be implemented as commanders possession
-                pass
-
-            # resurrect will turn a corpse into a living creature again
-            elif isinstance(spell, cards.Resurrect):
-                self.board[self.height - y][x - 1]["alive"] = \
-                self.board[self.height - y][x - 1]["dead"]
-
-                # don't forget to remove the corpse
-                self.board[self.height - y][x - 1]["dead"] = 0
-
-            # disrupt has a small chance to instantly kill a creature
-            elif isinstance(spell, cards.Disrupt):
-                r = random.randint(5, 13)
-                if (self.occupant(x, y).resist +
-                    self.occupant(x, y).defense) < r:
-                    self.kill_creature(x, y)
-
-            # disrupt has a medium chance to instantly kill a creature
-            elif isinstance(spell, cards.Disintegrate):
-                r = random.randint(7, 17)
-                if (self.occupant(x, y).resist +
-                    self.occupant(x, y).defense) < r:
-                    self.kill_creature(x, y)
-
-            # emp can instantly kill any tech aligned creature if it succeeds
-            # it can also target a commander to kill all his tech units
-            elif isinstance(spell, cards.EMP):
-                if self.occupant(x, y).alignment > 0:
-                    self.kill_creature(x, y)
-
-            # virus can instantly kill any life aligned creature if it succeeds
-            # it can also target a commander to kill all his life units
-            elif isinstance(spell, cards.Virus):
-                if self.occupant(x, y).alignment < 0:
-                    self.kill_creature(x, y)
-
-            # teleport can move your commander up to 7 squares away
-            elif isinstance(spell, cards.Teleport):
-                # teleport is tricky. need to make line of sight code
-                pass
-
-            # align isn't really a spell, but instead of making a whole
-            # module for it, it fits well here to alter the board.
-            elif isinstance(spell, cards.Align):
-                if spell.direction == "Technology":
-                    self.align_tech(spell.level)
-                if spell.direction == "Lifeforce":
-                    self.align_life(spell.level)
-        else:
-            self.message("SPELL FAILURE")
-
-    def align_life(self, level):
-        """this just works with the Align spell to change the board alignment"""
-        self.alignment -= 1 * level
-
-    def align_tech(self, level):
-        """this just works with the Align spell to change the board alignment"""
-        self.alignment += 1 * level
 
     def next_round(self):
         """

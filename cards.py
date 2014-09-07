@@ -36,8 +36,9 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
+        self.gameboard = 0
         self.hand = self.create_hand()
-        self.active_creatures = []
+        self.creatures = []
 
     def create_hand(self):
         all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), 
@@ -60,27 +61,80 @@ class Commander(Creature):
             card.commander = self
         return hand
 
-    def addCreature(creature):
-        self.active_creatures.append(creature)
-        creature.commander = self
+    def play_card(self, card):
+        if isinstance(card, Creature):
+            self.hand[self.hand.index(card)] = 0
+            # TODO - CHOICE BETWEEN BEAM AND HOLO
 
-    def upgrade(self, up):
-        if up == "Symbiont":
-            self.strength = max(self.strength, 6)
-            self.defense = max(self.defense, 6)
-            self.speed = max(self.speed, 2)
-            self.resist = max(self.resist, 8)
-        if up == "Force Shield":
-            self.defense = max(self.defense, 7)
-        if up == "Force Armor":
-            self.defense = max(self.defense, 8)
-        if up == "Blaster":
-            self.range = max(self.range, 3)
-        if up == "Light Sabre":
-            self.strength = max(self.strength, 7)
-        if up == "Jetpack":
-            self.speed = max(self.speed, 3)
-            self.flight = True
+        elif isinstance(card, Structure):
+            self.hand[self.hand.index(card)] = 0
+            # TODO - CHECK WHICH STRUCTURE AND ACT FROM THERE, ONLY FORTRESS
+            # REQUIRES FURTHER INPUT. TURRET/BEACON/FORCE ALL JUST GENERATE
+
+        elif isinstance(card, Spell):
+            if isinstance(card, HoloDetect):
+                # TODO - FLYING SPELL, CHECK FOR CASTABLE SQUARES
+                pass
+
+            else:
+                self.hand[self.hand.index(card)] = 0
+                # TODO - ALTERNATE SPELLS, CHECK FOR CASTABLE SQUARES
+
+        elif isinstance(card, Upgrade):
+            # remove card from hand
+            self.hand[self.hand.index(card)] = 0
+
+            # let board alignment influence upgrade probability
+            if self.gameboard.alignment * card.alignment > 0:
+                success = abs(self.gameboard.alignment / 10.0 +
+                              card.probability)
+            else:
+                success = card.probability
+
+            r = random.randint(1, 10) / 10
+            if success >= r:
+                if isinstance(card, Symbiont):
+                    self.strength = max(self.strength, 6)
+                    self.defense = max(self.defense, 6)
+                    self.speed = max(self.speed, 2)
+                    self.resist = max(self.resist, 8)
+
+                elif isinstance(card, ForceShield):
+                    self.defense = max(self.defense, 7)
+
+                elif isinstance(card, ForceArmor):
+                    self.defense = max(self.defense, 8)
+
+                elif isinstance(card, Blaster):
+                    self.range = max(self.range, 3)
+
+                elif isinstance(card, LightSabre):
+                    self.strength = max(self.strength, 7)
+
+                elif isinstance(card, Jetpack):
+                    self.speed = max(self.speed, 3)
+                    self.flight = True
+
+                elif isinstance(card, TechnologyOne):
+                    self.gameboard.alignment += 1
+
+                elif isinstance(card, TechnologyTwo):
+                    self.gameboard.alignment += 2
+
+                elif isinstance(card, LifeforceOne):
+                    self.gameboard.alignment -= 1
+
+                elif isinstance(card, LifeforceOne):
+                    self.gameboard.alignment -= 2
+
+            else:
+                # upgrade failed
+                pass
+
+
+
+    def add_creature(creature):
+        self.creatures.append(creature)
 
 class RangedCreature(Creature):
     """This creature can attack from range and melee"""
@@ -417,55 +471,64 @@ class Upgrade(object):
 
 class TechnologyOne(Upgrade):
     def __init__(self):
+        super(TechnologyOne, self).__init__()
         self.name = "Technology 1"
         self.probability = 0.8
-        self.alignment = 1
 
 class TechnologyTwo(Upgrade):
     def __init__(self):
+        super(TechnologyTwo, self).__init__()
         self.name = "Technology 2"
         self.probability = 0.6
         self.alignment = 2
 
 class LifeforceOne(Upgrade):
     def __init__(self):
+        super(LifeforceOne, self).__init__()
         self.name = "Lifeforce 1"
         self.probability = 0.8
         self.alignment = -1
 
 class LifeforceTwo(Upgrade):
     def __init__(self):
+        super(LifeforceTwo, self).__init__()
         self.name = "Lifeforce 2"
         self.probability = 0.6
         self.alignment = -2
 
 class Blaster(Upgrade):
     def __init__(self):
+        super(Blaster, self).__init__()
         self.name = "Blaster"
         self.probability = 0.5
 
 class ForceShield(Upgrade):
     def __init__(self):
+        super(ForceShield, self).__init__()
         self.name = "Force Shield"
         self.probability = 0.6
 
 class ForceArmor(Upgrade):
     def __init__(self):
+        super(ForceArmor, self).__init__()
         self.name = "Force Armor"
         self.probability = 0.4
 
 class Jetpack(Upgrade):
     def __init__(self):
+        super(Jetpack, self).__init__()
         self.name = "Jetpack"
         self.probability = 0.5
 
 class LightSabre(Upgrade):
     def __init__(self):
+        super(LightSabre, self).__init__()
         self.name = "Light-Sabre"
         self.probability = 0.6
 
 class Symbiont(Upgrade):
     def __init__(self):
+        super(Symbiont, self).__init__()
         self.name = "Symbiont"
         self.probability = 0.5
         self.alignment = -1

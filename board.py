@@ -15,20 +15,17 @@ class Gameboard(object):
         self.width = width
         self.height = height
         self.number_of_players = number_of_players
-        self.commander1 = 0
-        self.commander2 = 0
-        self.commander3 = 0
-        self.commander4 = 0
-        self.commander5 = 0
-        self.commander6 = 0
+        self.commanders = []
         self.board = []
-
         # each spot in the w x h grid should be filled with a living/dead
         # dictionary so that creatures and corpses can share a square
         for row in range(height):
             self.board.append([])
             for column in range(width):
                 self.board[row].append({"alive": 0, "dead": 0})
+
+        # get it started
+        self.spawn_commanders()
 
         # alignment determines chances of things occurring
         self.alignment = 0
@@ -97,117 +94,118 @@ class Gameboard(object):
         """
         if self.number_of_players == 1:
             # centralize the only player, for testing things
-            self.commander1 = cards.Commander()
+            self.commanders = [cards.Commander() for _ in range(1)]
+            for c in self.commanders:
+                c.gameboard = self
+
             self.board[self.height / 2][self.width / 2]["alive"] = \
-            self.commander1
+            self.commanders[0]
 
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
-            self.commander1 = cards.Commander()
-            self.commander2 = cards.Commander()
+            self.commanders = [cards.Commander() for _ in range(2)]
+            for c in self.commanders:
+                c.gameboard = self
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      self.commander1
+                      self.commanders[0]
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]\
-                      ["alive"] = self.commander2
+                      ["alive"] = self.commanders[1]
 
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
             # and one centrally located along the top
-            self.commander1 = cards.Commander()
-            self.commander2 = cards.Commander()
-            self.commander3 = cards.Commander()
+            self.commanders = [cards.Commander() for _ in range(3)]
+            for c in self.commanders:
+                c.gameboard = self
 
-            self.board[self.height - 1][0]["alive"] = self.commander1
+            self.board[0][self.width / 2]["alive"] = self.commanders[0]
+
+            self.board[self.height - 1][0]["alive"] = self.commanders[1]
 
             self.board[self.height - 1][self.width - 1]["alive"] = \
-            self.commander2
-
-            self.board[0][self.width / 2]["alive"] = self.commander3
+            self.commanders[2]
 
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
-            self.commander1 = cards.Commander()
-            self.commander2 = cards.Commander()
-            self.commander3 = cards.Commander()
-            self.commander4 = cards.Commander()
-
-            self.board[self.height - 1]\
-                      [int(round(self.width / 15.0))]["alive"] = \
-                      self.commander1
-
-            self.board[self.height - 1]\
-                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      self.commander2
+            self.commanders = [cards.Commander() for _ in range(4)]
+            for c in self.commanders:
+                c.gameboard = self
 
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      self.commander3
+                      self.commanders[0]
 
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      self.commander4
+                      self.commanders[1]
+
+            self.board[self.height - 1]\
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      self.commanders[2]
+
+            self.board[self.height - 1]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      self.commanders[3]
 
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
             # setup, with 1 near the top 3-player commander and 2 along the
             # bottom, at 1/3 intervals
-            self.commander1 = cards.Commander()
-            self.commander2 = cards.Commander()
-            self.commander3 = cards.Commander()
-            self.commander4 = cards.Commander()
-            self.commander5 = cards.Commander()
+            self.commanders = [cards.Commander() for _ in range(5)]
+            for c in self.commanders:
+                c.gameboard = self
+
+            self.board[int(round(self.height / 10.0))]\
+                      [self.width / 2]["alive"] = self.commanders[0]
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
-                      [int(round(self.width / 15.0))]["alive"] = self.commander1
+                      [int(round(self.width / 15.0))]["alive"] = \
+                      self.commanders[1]
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      self.commander2
-
-            self.board[int(round(self.height / 10.0))]\
-                      [self.width / 2]["alive"] = self.commander3
+                      self.commanders[2]
 
             self.board[self.height - 1]\
                       [int(round(self.width * 4.0 / 15.0))]["alive"] = \
-                      self.commander4
+                      self.commanders[3]
 
             self.board[self.height - 1]\
                       [int(round(self.width * 10.0 / 15.0))]["alive"] = \
-                      self.commander5
+                      self.commanders[4]
 
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
             # setup and one commander symmetrically on the bottom
-            self.commander1 = cards.Commander()
-            self.commander2 = cards.Commander()
-            self.commander3 = cards.Commander()
-            self.commander4 = cards.Commander()
-            self.commander5 = cards.Commander()
-            self.commander6 = cards.Commander()
-
-            self.board[self.height - 1]\
-                      [int(round(self.width / 15))]["alive"] = self.commander1
-
-            self.board[self.height - 1]\
-                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      self.commander2
+            self.commanders = [cards.Commander() for _ in range(6)]
+            for c in self.commanders:
+                c.gameboard = self
 
             self.board[int(round(self.height / 10.0))]\
-                      [int(round(self.width / 15))]["alive"] = self.commander3
+                      [int(round(self.width / 15))]["alive"] = \
+                      self.commanders[0]
+
+            self.board[int(round(self.height / 10.0))]\
+                      [self.width / 2]["alive"] = self.commanders[1]
 
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      self.commander4
+                      self.commanders[2]
 
-            self.board[int(round(self.height / 10.0))]\
-                      [self.width / 2]["alive"] = self.commander5
+            self.board[self.height - 1]\
+                      [int(round(self.width / 15))]["alive"] = \
+                      self.commanders[3]
 
             self.board[self.height - 1][self.width / 2]["alive"] = \
-                      self.commander6
+                      self.commanders[4]
+
+            self.board[self.height - 1]\
+                      [int(round(self.width * 13.0 / 15.0))]["alive"] = \
+                      self.commanders[5]
             
 
     def beam_creature(self, x, y, creature):

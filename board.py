@@ -100,8 +100,9 @@ class Gameboard(object):
 
             self.board[self.height / 2][self.width / 2]["alive"] = \
             self.commanders[0]
-            self.commanders[0].y = (self.height - self.height / 2)
-            self.commanders[0].x = (self.width / 2 + 1)
+
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(self.height / 2, self.width / 2)
 
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
@@ -112,16 +113,18 @@ class Gameboard(object):
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
                       self.commanders[0]
-            self.commanders[0].y = (self.height - int(round(self.height * 
-                                                            4.0 / 10.0)))
-            self.commanders[0].x = (int(round(self.width / 15.0)) + 1)
+
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(int(round(self.height * 4.0 / 10.0)), 
+                             int(round(self.width / 15.0)))
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]\
                       ["alive"] = self.commanders[1]
-            self.commanders[1].y = (self.height - int(round(self.height * 
-                                                            4.0 / 10.0)))
-            self.commanders[1].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+
+            self.commanders[1].x, self.commanders[1].y = \
+            self.coordinates(int(round(self.height * 4.0 / 10.0)),
+                             int(round(self.width * 13.0 / 15.0)))
 
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
@@ -131,17 +134,17 @@ class Gameboard(object):
                 c.gameboard = self
 
             self.board[0][self.width / 2]["alive"] = self.commanders[0]
-            self.commanders[0].y = (self.height - 0)
-            self.commanders[0].x = (self.width / 2 + 1)
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(0, self.width / 2)
 
             self.board[self.height - 1][0]["alive"] = self.commanders[1]
-            self.commanders[1].y = (self.height - (self.height - 1))
-            self.commanders[1].x = (0 + 1)
+            self.commanders[1].x, self.commanders[1].y = \
+            self.coordinates(self.height - 1, 0)
 
             self.board[self.height - 1][self.width - 1]["alive"] = \
             self.commanders[2]
-            self.commanders[2].y = (self.height - (self.height - 1))
-            self.commanders[2].x = (self.width - 1 + 1)
+            self.commanders[2].x, self.commanders[2].y = \
+            self.coordinates(self.height - 1, self.width - 1)
 
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
@@ -152,28 +155,30 @@ class Gameboard(object):
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
                       self.commanders[0]
-            self.commanders[0].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[0].x = (int(round(self.width / 15.0)) + 1)
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(int(round(self.height / 10.0)),
+                             int(round(self.width / 15.0)))
 
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
                       self.commanders[1]
-            self.commanders[1].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[1].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+            self.commanders[1].x, self.commanders[1].y = \
+            self.coordinates(int(round(self.height / 10.0)),
+                             int(round(self.width * 13.0 / 15.0)))
 
             self.board[self.height - 1]\
                       [int(round(self.width / 15.0))]["alive"] = \
                       self.commanders[2]
-            self.commanders[2].y = (self.height - (self.height - 1))
-            self.commanders[2].x = (int(round(self.width / 15.0)) + 1)
+            self.commanders[2].x, self.commanders[2].y = \
+            self.coordinates(self.height - 1,
+                             int(round(self.width / 15.0)))
 
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
                       self.commanders[3]
-            self.commanders[3].y = (self.height - (self.height - 1))
-            self.commanders[3].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+            self.commanders[3].x, self.commanders[3].y = \
+            self.coordinates(self.height - 1,
+                             int(round(self.width * 13.0 / 15.0)))
 
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
@@ -185,35 +190,37 @@ class Gameboard(object):
 
             self.board[int(round(self.height / 10.0))]\
                       [self.width / 2]["alive"] = self.commanders[0]
-            self.commanders[0].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[0].x = (self.width / 2 + 1)
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(int(round(self.height / 10.0)),
+                             self.width / 2)
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
                       self.commanders[1]
-            self.commanders[1].y = (self.height - int(round(self.height * 
-                                                            4.0 / 10.0)))
-            self.commanders[1].x = (int(round(self.width / 15.0)) + 1)
+            self.commanders[1].x, self.commanders[1].y = \
+            self.coordinates(int(round(self.height * 4.0 / 10.0)),
+                             int(round(self.width / 15.0)))
 
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
                       self.commanders[2]
-            self.commanders[2].y = (self.height - int(round(self.height * 
-                                                            4.0 / 10.0)))
-            self.commanders[2].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+            self.commanders[2].x, self.commanders[2].y = \
+            self.coordinates(int(round(self.height * 4.0 / 10.0)),
+                             int(round(self.width * 13.0 / 15.0)))
 
             self.board[self.height - 1]\
                       [int(round(self.width * 4.0 / 15.0))]["alive"] = \
                       self.commanders[3]
-            self.commanders[3].y = (self.height - (self.height - 1))
-            self.commanders[3].x = (int(round(self.width * 4.0 / 15.0)) + 1)
+            self.commanders[3].x, self.commanders[3].y = \
+            self.coordinates(self.height - 1,
+                             int(round(self.width * 4.0 / 15.0)))
 
             self.board[self.height - 1]\
                       [int(round(self.width * 10.0 / 15.0))]["alive"] = \
                       self.commanders[4]
-            self.commanders[4].y = (self.height - (self.height - 1))
-            self.commanders[4].x = (int(round(self.width * 10.0 / 15.0)) + 1)
+            self.commanders[4].x, self.commanders[4].y = \
+            self.coordinates(self.height - 1,
+                             int(round(self.width * 10.0 / 15.0)))
 
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
@@ -225,41 +232,40 @@ class Gameboard(object):
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15))]["alive"] = \
                       self.commanders[0]
-            self.commanders[0].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[0].x = (int(round(self.width / 15)) + 1)
+            self.commanders[0].x, self.commanders[0].y = \
+            self.coordinates(int(round(self.height / 10.0)),
+                             int(round(self.width / 15)))
 
             self.board[int(round(self.height / 10.0))]\
                       [self.width / 2]["alive"] = self.commanders[1]
-            self.commanders[1].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[1].x = (self.width / 2 + 1)
+            self.commanders[1].x, self.commanders[1].y = \
+            self.coordinates(int(round(self.height / 10.0)), self.width / 2)
 
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
                       self.commanders[2]
-            self.commanders[2].y = (self.height - int(round(self.height / 
-                                                            10.0)))
-            self.commanders[2].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+            self.commanders[2].x, self.commanders[2].y = \
+            self.coordinates(int(round(self.height / 10.0)),
+                             int(round(self.width * 13.0 / 15.0)))
 
             self.board[self.height - 1]\
                       [int(round(self.width / 15))]["alive"] = \
                       self.commanders[3]
-            self.commanders[3].y = (self.height - (self.height - 1))
-            self.commanders[3].x = (int(round(self.width / 15)) + 1)
+            self.commanders[3].x, self.commanders[3].y = \
+            self.coordinates(self.height - 1, int(round(self.width / 15)))
 
             self.board[self.height - 1][self.width / 2]["alive"] = \
                       self.commanders[4]
-            self.commanders[4].y = (self.height - (self.height - 1))
-            self.commanders[4].x = (self.width / 2 + 1)
+            self.commanders[4].x, self.commanders[4].y = \
+            self.coordinates(self.height - 1, self.width / 2)
 
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
                       self.commanders[5]
-            self.commanders[5].y = (self.height - (self.height - 1))
-            self.commanders[5].x = (int(round(self.width * 13.0 / 15.0)) + 1)
+            self.commanders[5].x, self.commanders[5].y = \
+            self.coordinates(self.height - 1, 
+                             int(round(self.width * 13.0 / 15.0)))
             
-
     def beam_creature(self, x, y, creature):
         #don't beam a creature onto another living creature
         if self.board[self.height - y][x - 1]["alive"] == 0:
@@ -345,6 +351,10 @@ class Gameboard(object):
     def occupant(self, x, y):
         """This function takes a square and returns the living unit on it."""
         return self.board[self.height - y][x - 1]["alive"]
+
+    def coordinates(self, i, j):
+        """This function takes array coordinates and returns their x, y."""
+        return (j + 1, self.height - i)
 
     def kill_creature(self, x, y):
         """

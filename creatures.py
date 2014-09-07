@@ -29,15 +29,6 @@ class Creature(object):
         self.y = 0
         self.commander = 0
 
-    def __repr__(self):
-        return ("{}\nname: {}\nprobability: {}\nstr: {}\ndef: {}\n"
-                "spd: {}\nres: {}\nalign: {}\nx: {}\ny: {}\n"
-                "commander: {}\n").format(type(self), self.name, 
-                                          self.probability, self.strength, 
-                                          self.defense, self.speed, 
-                                          self.resist, self.alignment, self.x, 
-                                          self.y, self.commander)
-
     def movable_squares(self):
         movable = []
 
@@ -59,13 +50,6 @@ class Commander(Creature):
     def addCreature(creature):
         self.active_creatures.append(creature)
         creature.commander = self
-
-    def __repr__(self):
-        return ("{}\nstr: {}\ndef: {}\nspd: {}\nres: {}\nrange: {}\n"
-                "flight: {}\n"
-                "mounted: {}".format(type(self), self.strength, self.defense, 
-                                     self.speed, self.resist, self.range, 
-                                     self.flight, self.on_mount))
 
     def upgrade(self, up):
         if up == "Symbiont":
@@ -96,10 +80,6 @@ class RangedCreature(Creature):
         self.range = range
         self.rstr = rstr
 
-    def __repr__(self):
-        return (super(RangedCreature, self).__repr__() +
-        "range: {}\nrange str: {}\n".format(self.range, self.rstr))
-
 class FlyingCreature(Creature):
     """This creature can move unobstructed by other creatures/structures"""
     def __init__(self, name, probability, strength,
@@ -109,10 +89,6 @@ class FlyingCreature(Creature):
         super(FlyingCreature, self).__init__(name, probability, strength,
                                             defense, speed, resist, alignment)
         self.flight = True
-
-    def __repr__(self):
-        return (super(FlyingCreature, self).__repr__() +
-        "Flight: {}\n").format(self.flight)
 
 
 class SlimyCreature(Creature):
@@ -125,10 +101,6 @@ class SlimyCreature(Creature):
                                             defense, speed, resist, alignment)
         self.slimy = True
 
-    def __repr__(self):
-        return (super(SlimyCreature, self).__repr__() +
-        "Slime: {}\n").format(self.slimy)
-
 class Mount(Creature):
     """This creature can hold your commander"""
     def __init__(self, name, probability, strength,
@@ -140,10 +112,6 @@ class Mount(Creature):
         self.mount = True
         self.occupied = False
 
-    def __repr__(self):
-        return (super(Mount, self).__repr__() +
-        "Mount: {}\nOccupied: {}\n").format(self.mount, self.occupied)
-
 class FlyingMount(Mount, FlyingCreature):
     """This creature can hold your commander and fly"""
     def __init__(self, name, probability, strength, defense,
@@ -153,9 +121,6 @@ class FlyingMount(Mount, FlyingCreature):
         super(FlyingMount, self).__init__(name, probability, strength,
                                           defense, speed, resist, alignment)
         self.flight = True
-
-    def __repr__(self):
-        return (super(FlyingMount, self).__repr__())
 
 class RangedMount(Mount, RangedCreature):
     """This creature can hold your commander and fly"""
@@ -170,9 +135,6 @@ class RangedMount(Mount, RangedCreature):
         self.mount = True
         self.occupied = False
 
-    def __repr__(self):
-        return (super(RangedMount, self).__repr__())
-
 class FlyingSlimyCreature(SlimyCreature, FlyingCreature):
     """This creature is slimy and flying"""
     def __init__(self, name, probability, strength, defense,
@@ -182,9 +144,6 @@ class FlyingSlimyCreature(SlimyCreature, FlyingCreature):
         super(FlyingSlimyCreature, self).__init__(name, probability, strength,
                                            defense, speed, resist, alignment)
         self.flight = True
-
-    def __repr__(self):
-        return (super(FlyingSlimyCreature, self).__repr__())
 
 class FlyingRangedMount(Mount, FlyingCreature, RangedCreature):
     """This creature can hold your commander, fly, and has a ranged attack"""
@@ -199,6 +158,3 @@ class FlyingRangedMount(Mount, FlyingCreature, RangedCreature):
         self.rstr = rstr
         self.mount = True
         self.occupied = False
-
-    def __repr__(self):
-            return (super(FlyingRangedMount, self).__repr__())

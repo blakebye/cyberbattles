@@ -1,9 +1,7 @@
 # to make nice looking print_board
 from __future__ import print_function
 import random
-import creatures as c
-import structures as s
-import spells as sp
+import cards
 
 class Gameboard(object):
     """
@@ -93,38 +91,38 @@ class Gameboard(object):
         """
         if self.number_of_players == 1:
             # centralize the only player, for testing things
-            self.board[self.height / 2][self.width / 2]["alive"] = c.Commander()
+            self.board[self.height / 2][self.width / 2]["alive"] = cards.Commander()
 
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
 
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
             # and one centrally located along the top
-            self.board[self.height - 1][0]["alive"] = c.Commander()
-            self.board[self.height - 1][self.width - 1]["alive"] = c.Commander()
-            self.board[0][self.width / 2]["alive"] = c.Commander()
+            self.board[self.height - 1][0]["alive"] = cards.Commander()
+            self.board[self.height - 1][self.width - 1]["alive"] = cards.Commander()
+            self.board[0][self.width / 2]["alive"] = cards.Commander()
 
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
             self.board[self.height - 1]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
 
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
@@ -132,40 +130,40 @@ class Gameboard(object):
             # bottom, at 1/3 intervals
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height * 4.0 / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [self.width / 2]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[self.height - 1]\
                       [int(round(self.width * 4.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[self.height - 1]\
                       [int(round(self.width * 10.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
 
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
             # setup and one commander symmetrically on the bottom
             self.board[self.height - 1]\
                       [int(round(self.width / 15))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[self.height - 1]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width / 15))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [int(round(self.width * 13.0 / 15.0))]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[int(round(self.height / 10.0))]\
                       [self.width / 2]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             self.board[self.height - 1][self.width / 2]["alive"] = \
-                      c.Commander()
+                      cards.Commander()
             
 
     def beam_creature(self, x, y, creature):
@@ -278,7 +276,7 @@ class Gameboard(object):
         This function takes a square and an upgrade type and upgrades the
         commander on that square with that upgrade.
         """
-        if isinstance(self.occupant(x, y), c.Commander):
+        if isinstance(self.occupant(x, y), cards.Commander):
             self.occupant(x, y).upgrade(up)
 
     def cast_spell(self, x, y, spell):

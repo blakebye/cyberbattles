@@ -1,7 +1,5 @@
-import board
+import random
 import creatures
-import structures
-import spells
 
 class AlienHatchling(creatures.Creature):
     def __init__(self):
@@ -129,22 +127,192 @@ class Spideroid(creatures.Creature):
     def __init__(self):
         super(Spideroid, self).__init__("Spideroid", 0.2, 8, 8, 6, 8, 2)
 
-class Fortress(structures.Structure):
+class Structure(object):
+    def __init__(self, name, probability):
+        self.name = name
+        self.probability = probability
+        self.alignment = 1
+        self.x = 0
+        self.y = 0
+        self.commander = 0
+
+class Fortress(Structure):
     def __init__(self):
         self.name = "Fortress"
         self.probability = 0.6
 
-class GunTurret(structures.Structure):
+class GunTurret(Structure):
     def __init__(self):
         self.name = "Gun Turret"
         self.probability = 0.5
 
-class SubspaceBeacon(structures.Structure):
+class SubspaceBeacon(Structure):
     def __init__(self):
         self.name = "Subspace Beacon"
         self.probability = 0.9
 
-class ForceField(structures.Structure):
+class ForceField(Structure):
     def __init__(self):
         self.name = "Force Field"
         self.probability = 0.9
+
+class Spell(object):
+    def __init__(self):
+        self.x = 0
+        self.y = 0
+        self.commander = 0
+
+class HoloDetect(Spell):
+    def __init__(self):
+        self.name = "HoloDetect"
+        self.probability = 1.00
+        self.alignment = 0
+        self.cast_range = 20
+
+class Mutate(Spell):
+    def __init__(self):
+        self.name = "Mutate"
+        self.probability = 0.7
+        self.alignment = -1
+        self.cast_range = 4
+
+class Hypnotize(Spell):
+    def __init__(self):
+        self.name = "Hypnotize"
+        self.probability = 1.00
+        self.alignment = 0
+        self.cast_range = 7
+
+class Resurrect(Spell):
+    def __init__(self):
+        self.name = "Resurrect"
+        self.probability = 0.6
+        self.alignment = -1
+        self.cast_range = 4
+
+class Disrupt(Spell):
+    def __init__(self):
+        self.name = "Disrupt"
+        self.probability = 1.00
+        self.alignment = 0
+        self.cast_range = 6
+
+class Disintegrate(Spell):
+    def __init__(self):
+        self.name = "Disintegrate"
+        self.probability = 1.00
+        self.alignment = 0
+        self.cast_range = 4
+
+class EMP(Spell):
+    def __init__(self):
+        self.name = "EMP"
+        self.probability = 0.5
+        self.alignment = 1
+        self.cast_range = 20
+
+class Virus(Spell):
+    def __init__(self):
+        self.name = "Virus"
+        self.probability = 0.5
+        self.alignment = -1
+        self.cast_range = 20
+
+class Teleport(Spell):
+    def __init__(self):
+        self.name = "Teleport"
+        self.probability = 0.7
+        self.alignment = 0
+        self.cast_range = 7
+
+class Fire(Spell):
+    def __init__(self):
+        self.name = "Fire"
+        self.probability = 0.9
+        self.alignment = 0
+        self.cast_range = 6
+
+class AlienGoo(Spell):
+    def __init__(self):
+        self.name = "Alien Goo"
+        self.probability = 0.9
+        self.alignment = 1
+        self.cast_range = 6
+
+class Upgrade(object):
+    def __init__(self):
+        # all upgrades are tech except for symbiont
+        self.alignment = 1
+        self.commander = 0
+
+class TechnologyOne(Upgrade):
+    def __init__(self):
+        self.name = "Technology 1"
+        self.probability = 0.8
+        self.alignment = 1
+
+class TechnologyTwo(Upgrade):
+    def __init__(self):
+        self.name = "Technology 2"
+        self.probability = 0.6
+        self.alignment = 2
+
+class LifeforceOne(Upgrade):
+    def __init__(self):
+        self.name = "Lifeforce 1"
+        self.probability = 0.8
+        self.alignment = -1
+
+class LifeforceTwo(Upgrade):
+    def __init__(self):
+        self.name = "Lifeforce 2"
+        self.probability = 0.6
+        self.alignment = -2
+
+class Blaster(Upgrade):
+    def __init__(self):
+        self.name = "Blaster"
+        self.probability = 0.5
+
+class ForceShield(Upgrade):
+    def __init__(self):
+        self.name = "Force Shield"
+        self.probability = 0.6
+
+class ForceArmor(Upgrade):
+    def __init__(self):
+        self.name = "Force Armor"
+        self.probability = 0.4
+
+class Jetpack(Upgrade):
+    def __init__(self):
+        self.name = "Jetpack"
+        self.probability = 0.5
+
+class LightSabre(Upgrade):
+    def __init__(self):
+        self.name = "Light-Sabre"
+        self.probability = 0.6
+
+class Symbiont(Upgrade):
+    def __init__(self):
+        self.name = "Symbiont"
+        self.probability = 0.5
+        self.alignment = -1
+
+def return_hand():
+    all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), LaserRobot(),
+                 FloatingEye(), FaceGrabber(), Jeep(), SlimeWarrior(), Drone(),
+                 SentryRobot(), Alien(), FireFox(), SlimeBeast(), Hovership(),
+                 MutantMount(), Cyborg(), HoverTank(), MiningDroid(), Tank(),
+                 FlyingSlime(), PsiLord(), PsiWarrior(), AcidSpitter(),
+                 Mutant(), AlienQueen(), MechWarrior(), Tentacle(), Predator(),
+                 Spideroid(), Fortress(), GunTurret(), SubspaceBeacon(),
+                 ForceField(), Mutate(), Hypnotize(), Resurrect(), Disrupt(),
+                 Disintegrate(), EMP(), Virus(), Teleport(), Fire(), AlienGoo(),
+                 TechnologyOne(), TechnologyTwo(), LifeforceOne(), 
+                 LifeforceTwo(), Blaster(), ForceShield(), ForceArmor(),
+                 Jetpack(), LightSabre(), Symbiont()]
+
+    hand = [HoloDetect(), random.sample(all_cards, 17)]
+    return hand

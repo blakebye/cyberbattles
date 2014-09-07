@@ -36,7 +36,7 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
-        self.hand = cards.create_hand()
+        self.hand = create_hand()
         self.active_creatures = []
 
     def addCreature(creature):
@@ -463,5 +463,6 @@ def create_hand():
                  LifeforceTwo(), Blaster(), ForceShield(), ForceArmor(),
                  Jetpack(), LightSabre(), Symbiont()]
 
-    hand = [HoloDetect(), random.sample(all_cards, 17)]
+    hand = random.sample(all_cards, 17)
+    hand.insert(0, HoloDetect())
     return hand

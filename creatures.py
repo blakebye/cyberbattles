@@ -32,10 +32,11 @@ class Creature(object):
     def __repr__(self):
         return ("{}\nname: {}\nprobability: {}\nstr: {}\ndef: {}\n"
                 "spd: {}\nres: {}\nalign: {}\nx: {}\ny: {}\n"
-                "commander: {}").format(type(self), self.name, self.probability,
-                                self.strength, self.defense, self.speed, 
-                                self.resist, self.alignment, self.x, self.y
-                                self.commander)
+                "commander: {}\n").format(type(self), self.name, 
+                                          self.probability, self.strength, 
+                                          self.defense, self.speed, 
+                                          self.resist, self.alignment, self.x, 
+                                          self.y, self.commander)
 
     def movable_squares(self):
         movable = []
@@ -52,10 +53,11 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
-        self.creatures = []
+        self.hand = []
+        self.active_creatures = []
 
     def addCreature(creature):
-        self.creatures.append(creature)
+        self.active_creatures.append(creature)
         creature.commander = self
 
     def __repr__(self):
@@ -154,6 +156,22 @@ class FlyingMount(Mount, FlyingCreature):
 
     def __repr__(self):
         return (super(FlyingMount, self).__repr__())
+
+class RangedMount(Mount, RangedCreature):
+    """This creature can hold your commander and fly"""
+    def __init__(self, name, probability, strength, defense,
+                 speed, resist, alignment, range, rstr):
+        # define a ranged mount by defining a mount and then
+        # giving it the property of range
+        super(RangedCreature, self).__init__(name, probability, strength, 
+                                             defense, speed, resist, alignment)
+        self.range = range
+        self.rstr = rstr
+        self.mount = True
+        self.occupied = False
+
+    def __repr__(self):
+        return (super(RangedMount, self).__repr__())
 
 class FlyingSlimyCreature(SlimyCreature, FlyingCreature):
     """This creature is slimy and flying"""

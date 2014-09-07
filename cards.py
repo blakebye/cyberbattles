@@ -36,8 +36,29 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
-        self.hand = create_hand()
+        self.hand = self.create_hand()
         self.active_creatures = []
+
+    def create_hand(self):
+        all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), 
+                     LaserRobot(), FloatingEye(), FaceGrabber(), Jeep(), 
+                     SlimeWarrior(), Drone(), SentryRobot(), Alien(), FireFox(),
+                     SlimeBeast(), Hovership(), MutantMount(), Cyborg(), 
+                     HoverTank(), MiningDroid(), Tank(), FlyingSlime(), 
+                     PsiLord(), PsiWarrior(), AcidSpitter(), Mutant(), 
+                     AlienQueen(), MechWarrior(), Tentacle(), Predator(),
+                     Spideroid(), Fortress(), GunTurret(), SubspaceBeacon(),
+                     ForceField(), Mutate(), Hypnotize(), Resurrect(), 
+                     Disrupt(), Disintegrate(), EMP(), Virus(), Teleport(), 
+                     Fire(), AlienGoo(), TechnologyOne(), TechnologyTwo(), 
+                     LifeforceOne(), LifeforceTwo(), Blaster(), ForceShield(), 
+                     ForceArmor(), Jetpack(), LightSabre(), Symbiont()]
+
+        hand = random.sample(all_cards, 17)
+        hand.insert(0, HoloDetect())
+        for card in hand:
+            card.commander = self
+        return hand
 
     def addCreature(creature):
         self.active_creatures.append(creature)
@@ -448,21 +469,3 @@ class Symbiont(Upgrade):
         self.name = "Symbiont"
         self.probability = 0.5
         self.alignment = -1
-
-def create_hand():
-    all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), LaserRobot(),
-                 FloatingEye(), FaceGrabber(), Jeep(), SlimeWarrior(), Drone(),
-                 SentryRobot(), Alien(), FireFox(), SlimeBeast(), Hovership(),
-                 MutantMount(), Cyborg(), HoverTank(), MiningDroid(), Tank(),
-                 FlyingSlime(), PsiLord(), PsiWarrior(), AcidSpitter(),
-                 Mutant(), AlienQueen(), MechWarrior(), Tentacle(), Predator(),
-                 Spideroid(), Fortress(), GunTurret(), SubspaceBeacon(),
-                 ForceField(), Mutate(), Hypnotize(), Resurrect(), Disrupt(),
-                 Disintegrate(), EMP(), Virus(), Teleport(), Fire(), AlienGoo(),
-                 TechnologyOne(), TechnologyTwo(), LifeforceOne(), 
-                 LifeforceTwo(), Blaster(), ForceShield(), ForceArmor(),
-                 Jetpack(), LightSabre(), Symbiont()]
-
-    hand = random.sample(all_cards, 17)
-    hand.insert(0, HoloDetect())
-    return hand

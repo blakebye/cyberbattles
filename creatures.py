@@ -25,14 +25,21 @@ class Creature(object):
         self.slimy = False
         self.mount = False
         self.holograph = False
+        self.x = 0
+        self.y = 0
+        self.commander = 0
 
     def __repr__(self):
-        return ("{}\nname: {}\nprobability: {}\nstr: {}\ndef: {}\nspd: {}\n"
-                "res: {}\nalign: {}\n").format(type(self), self.name,
-                                               self.probability,
-                                               self.strength, self.defense,
-                                               self.speed, self.resist,
-                                               self.alignment)
+        return ("{}\nname: {}\nprobability: {}\nstr: {}\ndef: {}\n"
+                "spd: {}\nres: {}\nalign: {}\nx: {}\ny: {}\n"
+                "commander: {}").format(type(self), self.name, self.probability,
+                                self.strength, self.defense, self.speed, 
+                                self.resist, self.alignment, self.x, self.y
+                                self.commander)
+
+    def movable_squares(self):
+        movable = []
+
 
 class Commander(Creature):
     """This creature is a commander."""
@@ -45,6 +52,11 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
+        self.creatures = []
+
+    def addCreature(creature):
+        self.creatures.append(creature)
+        creature.commander = self
 
     def __repr__(self):
         return ("{}\nstr: {}\ndef: {}\nspd: {}\nres: {}\nrange: {}\n"

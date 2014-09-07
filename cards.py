@@ -18,12 +18,38 @@ class Creature(object):
         self.slimy = False
         self.mount = False
         self.holograph = False
+        self.gameboard = 0
         self.x = 0
         self.y = 0
         self.commander = 0
 
-    def movable_squares(self):
-        movable = []
+    def move(self):
+        movement = self.speed
+        while movement >= 1:
+            lateral_squares = []
+            diagonal_squares = []
+            for i, j in ((self.x - 1, self.y), 
+                         (self.x, self.y + 1),
+                         (self.x, self.y - 1), 
+                         (self.x + 1, self.y)):
+                if self.gameboard.occupant(i, j) == 0:
+                    lateral_squares.append((i, j))
+            for i, j in ((self.x - 1, self.y - 1), 
+                         (self.x - 1, self.y + 1),
+                         (self.x + 1, self.y - 1), 
+                         (self.x + 1, self.y + 1)):
+                if self.gameboard.occupant(i, j) == 0:
+                    diagonal_squares.append((i, j))
+            for avail in lateral_squares:
+                print avail
+            for avail in diagonal_squares:
+                print avail
+            print "Enter where you'd like to move."
+            destx, desty = (raw_input("X: "), raw_input("Y: "))
+            if (destx, desty) in lateral_squares:
+                movement -= 1
+            if (destx, desty) in diagonal_squares:
+                movement -= 1.5
 
 class Commander(Creature):
     """This creature is a commander."""
@@ -36,7 +62,6 @@ class Commander(Creature):
         self.range = 1
         self.flight = False
         self.on_mount = False
-        self.gameboard = 0
         self.x = 0
         self.y = 0
         self.hand = self.create_hand()
@@ -67,12 +92,15 @@ class Commander(Creature):
         return hand
 
     def play_card(self, card):
+        # PLAY CREATURE CARDS
         if isinstance(card, Creature):
+            # remove played card from hand
             self.hand[self.hand.index(card)] = 0
             # TODO - CHOICE BETWEEN BEAM AND HOLO
 
+        # PLAY STRUCTURE CARDS
         elif isinstance(card, Structure):
-            # TODO - MAKE SURE STRUCTURES HAVE TO PASS PROBABILITY
+            # remove played card from hand
             self.hand[self.hand.index(card)] = 0
 
             # let board alignment influence structure probability
@@ -84,7 +112,6 @@ class Commander(Creature):
 
             r = random.randint(1, 10) / 10
             if success >= r:
-
                 if isinstance(card, Fortress):
                     # TODO - FORTRESS NEEDS A TARGETTING SUBSKILL
                     pass
@@ -130,35 +157,99 @@ class Commander(Creature):
                                 self.gameboard.board[self.gameboard.height - j]\
                                 [i - 1]["alive"] = SubspaceBeacon()
 
+            # structure failed
             else:
-                # structure failed
                 pass
 
+        # PLAY SPELL CARDS
         elif isinstance(card, Spell):
             if isinstance(card, HoloDetect):
                 # TODO - FLYING SPELL, CHECK FOR CASTABLE SQUARES
+                # NEED TO GET TARGET X, Y
+                # if occupant(x, y).holograph == True:
+                #     self.board[self.height - y][x - 1]["alive"] = 0
                 pass
-
-            elif isinstance(card, Virus) or isinstance(card, EMP):
-                self.hand[self.hand.index(card)] = 0
-                # TODO - NEITHER OF THESE SPELLS REQUIRE LINE OF SIGHT
-
             else:
                 self.hand[self.hand.index(card)] = 0
-                # TODO - ALL THESE SPELLS REQUIRE LINE OF SIGHT
 
+            if isinstance(card, Virus) or isinstance(card, EMP):
+                pass
+                # TODO - NEITHER OF THESE SPELLS REQUIRE LINE OF SIGHT
+                # NEED TO GET TARGET X, Y
+
+            elif isinstance(card, Mutate):
+                pass
+
+            elif isinstance(card, Hypnotize):
+                # NEED target x, y
+                # self.board[self.height - y][x - 1]["alive"] = \
+                # self.board[self.height - y][x - 1]["dead"]
+                pass
+
+            elif isinstance(card, Resurrect):
+                # NEED target x, y
+                # self.board[self.height - y][x - 1]["alive"] = \
+                # self.board[self.height - y][x - 1]["dead"]
+
+                # don't forget to remove the corpse
+                # self.board[self.height - y][x - 1]["dead"] = 0
+                pass
+
+            elif isinstance(card, Disrupt):
+                # NEED target x, y
+                # r = random.randint(5, 13)
+                # if (self.occupant(x, y).resist +
+                #     self.occupant(x, y).defense) < r:
+                #     self.kill_creature(x, y)
+                pass
+
+            elif isinstance(card, Disintegrate):
+                # NEED target x, y
+                # r = random.randint(7, 17)
+                # if (self.occupant(x, y).resist +
+                #     self.occupant(x, y).defense) < r:
+                #     self.kill_creature(x, y)
+                pass
+
+            elif isinstance(card, EMP):
+                # NEED target x, y
+                # if self.occupant(x, y).alignment > 0:
+                #     self.kill_creature(x, y)
+                # ALSO COMMANDER RESISTANCE
+                pass
+
+            elif isinstance(card, Virus):
+                # NEED target x, y
+                # if self.occupant(x, y).alignment < 0:
+                #     self.kill_creature(x, y)
+                # ALSO COMMANDER RESISTANCE
+                pass
+
+            elif isinstance(card, Teleport):
+                # NEED target x, y
+                pass
+
+            elif isinstance(card, Fire):
+                # NEED target x, y
+                pass
+
+            elif isinstance(card, AlienGoo):
+                # NEED target x, y
+                pass
+
+        # PLAY UPGRADE CARDS
         elif isinstance(card, Upgrade):
             # remove card from hand
             self.hand[self.hand.index(card)] = 0
 
             # let board alignment influence upgrade probability
             if self.gameboard.alignment * card.alignment > 0:
-                success = abs(self.gameboard.alignment / 10.0 +
-                              card.probability)
+                success = (abs(self.gameboard.alignment) / 10.0 +
+                           card.probability)
             else:
                 success = card.probability
 
-            r = random.randint(1, 10) / 10
+            r = random.randint(1, 10) / 10.0
             if success >= r:
                 if isinstance(card, Symbiont):
                     self.strength = max(self.strength, 6)
@@ -191,17 +282,12 @@ class Commander(Creature):
                 elif isinstance(card, LifeforceOne):
                     self.gameboard.alignment -= 1
 
-                elif isinstance(card, LifeforceOne):
+                elif isinstance(card, LifeforceTwo):
                     self.gameboard.alignment -= 2
 
             else:
                 # upgrade failed
                 pass
-
-
-
-    def add_creature(creature):
-        self.creatures.append(creature)
 
 class RangedCreature(Creature):
     """This creature can attack from range and melee"""
@@ -546,6 +632,7 @@ class TechnologyOne(Upgrade):
         super(TechnologyOne, self).__init__()
         self.name = "Technology 1"
         self.probability = 0.8
+        self.alignment = 1
 
 class TechnologyTwo(Upgrade):
     def __init__(self):

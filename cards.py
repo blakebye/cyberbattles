@@ -24,8 +24,8 @@ class Creature(object):
         self.commander = 0
 
     def move(self):
-        movement = self.speed
-        while movement >= 1:
+        self.movement = self.speed
+        while self.movement >= 1:
             lateral_squares = []
             diagonal_squares = []
             for i, j in ((self.x - 1, self.y), 
@@ -45,11 +45,47 @@ class Creature(object):
             for avail in diagonal_squares:
                 print avail
             print "Enter where you'd like to move."
-            destx, desty = (raw_input("X: "), raw_input("Y: "))
+            print "You have %f movement" % self.movement
+            destx, desty = (int(raw_input("X: ")), int(raw_input("Y: ")))
             if (destx, desty) in lateral_squares:
-                movement -= 1
-            if (destx, desty) in diagonal_squares:
-                movement -= 1.5
+                self.movement -= 1
+                newj, newi = self.gameboard.indices(destx, desty)
+                self.gameboard.board[newj][newi]["alive"] = self
+
+                oldj, oldi = self.gameboard.indices(self.x, self.y)
+                self.gameboard.board[oldj][oldi]["alive"] = 0
+                self.x, self.y = (destx, desty)
+            elif (destx, desty) in diagonal_squares:
+                self.movement -= 1.5
+                newj, newi = self.gameboard.indices(destx, desty)
+                self.gameboard.board[newj][newi]["alive"] = self
+
+                oldj, oldi = self.gameboard.indices(self.x, self.y)
+                self.gameboard.board[oldj][oldi]["alive"] = 0
+                self.x, self.y = (destx, desty)
+            else:
+                print "%i %i isn't a valid move!" % (destx, desty)
+            self.gameboard.print_board()
+            adjacent_squares = []
+            for i, j in ((self.x - 1, self.y), 
+                         (self.x, self.y + 1),
+                         (self.x, self.y - 1), 
+                         (self.x + 1, self.y),
+                         (self.x - 1, self.y - 1), 
+                         (self.x - 1, self.y + 1),
+                         (self.x + 1, self.y - 1), 
+                         (self.x + 1, self.y + 1)):
+                if isinstance(self.gameboard.occupant(i, j), Creature) and \
+                   self.gameboard.occupant(i, j).commander != self:
+                    print "ENGAGED TO ATTACK"
+                    break
+
+            else:
+                continue
+                
+            break
+
+
 
 class Commander(Creature):
     """This creature is a commander."""
@@ -129,10 +165,10 @@ class Commander(Creature):
                                  (self.x + 2, self.y - 1),
                                  (self.x + 2, self.y - 2), 
                                  (self.x + 1, self.y - 2)):
-                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                            i <= self.gameboard.width):
+                        if (j > 0 and i > 0 and j <= 10 and 
+                            i <= 15):
                             if self.gameboard.occupant(i, j) == 0:
-                                self.gameboard.board[self.gameboard.height - j]\
+                                self.gameboard.board[10 - j]\
                                 [i - 1]["alive"] = card
 
                 elif isinstance(card, GunTurret):
@@ -140,10 +176,10 @@ class Commander(Creature):
                                  (self.x, self.y - 2), (self.x - 2, self.y + 2), 
                                  (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
                                  (self.x + 2, self.y - 2)):
-                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                            i <= self.gameboard.width):
+                        if (j > 0 and i > 0 and j <= 10 and 
+                            i <= 15):
                             if self.gameboard.occupant(i, j) == 0:
-                                self.gameboard.board[self.gameboard.height - j]\
+                                self.gameboard.board[10 - j]\
                                 [i - 1]["alive"] = GunTurret()
 
                 elif isinstance(card, SubspaceBeacon):
@@ -151,10 +187,10 @@ class Commander(Creature):
                                  (self.x, self.y - 2), (self.x - 2, self.y + 2), 
                                  (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
                                  (self.x + 2, self.y - 2)):
-                        if (j > 0 and i > 0 and j <= self.gameboard.height and 
-                            i <= self.gameboard.width):
+                        if (j > 0 and i > 0 and j <= 10 and 
+                            i <= 15):
                             if self.gameboard.occupant(i, j) == 0:
-                                self.gameboard.board[self.gameboard.height - j]\
+                                self.gameboard.board[10 - j]\
                                 [i - 1]["alive"] = SubspaceBeacon()
 
             # structure failed

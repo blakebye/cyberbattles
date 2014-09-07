@@ -37,6 +37,8 @@ class Commander(Creature):
         self.flight = False
         self.on_mount = False
         self.gameboard = 0
+        self.x = 0
+        self.y = 0
         self.hand = self.create_hand()
         self.creatures = []
 
@@ -55,8 +57,11 @@ class Commander(Creature):
                      LifeforceOne(), LifeforceTwo(), Blaster(), ForceShield(), 
                      ForceArmor(), Jetpack(), LightSabre(), Symbiont()]
 
+        # this will generate a hand full of 17 random cards + holodetect
         hand = random.sample(all_cards, 17)
         hand.insert(0, HoloDetect())
+
+        # this ensures each card is assigned the proper commander.
         for card in hand:
             card.commander = self
         return hand
@@ -67,18 +72,65 @@ class Commander(Creature):
             # TODO - CHOICE BETWEEN BEAM AND HOLO
 
         elif isinstance(card, Structure):
+            # TODO - MAKE SURE STRUCTURES HAVE TO PASS PROBABILITY
             self.hand[self.hand.index(card)] = 0
-            # TODO - CHECK WHICH STRUCTURE AND ACT FROM THERE, ONLY FORTRESS
-            # REQUIRES FURTHER INPUT. TURRET/BEACON/FORCE ALL JUST GENERATE
+            if isinstance(card, Fortress):
+                # TODO - FORTRESS NEEDS A TARGETTING SUBSKILL
+                pass
+
+            elif isinstance(card, ForceField):
+                for i, j in ((self.x - 2, self.y + 1), 
+                             (self.x - 2, self.y + 2), 
+                             (self.x - 1, self.y + 2), 
+                             (self.x + 2, self.y + 1),
+                             (self.x + 2, self.y + 2), 
+                             (self.x + 1, self.y + 2),
+                             (self.x - 2, self.y - 1), 
+                             (self.x - 2, self.y - 2), 
+                             (self.x - 1, self.y - 2), 
+                             (self.x + 2, self.y - 1),
+                             (self.x + 2, self.y - 2), 
+                             (self.x + 1, self.y - 2)):
+                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                        i <= self.gameboard.width):
+                        if self.gameboard.occupant(i, j) == 0:
+                            self.gameboard.board[self.gameboard.height - j]\
+                            [i - 1]["alive"] = card
+
+            elif isinstance(card, GunTurret):
+                for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
+                             (self.x, self.y - 2), (self.x - 2, self.y + 2), 
+                             (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
+                             (self.x + 2, self.y - 2)):
+                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                        i <= self.gameboard.width):
+                        if self.gameboard.occupant(i, j) == 0:
+                            self.gameboard.board[self.gameboard.height - j]\
+                            [i - 1]["alive"] = GunTurret()
+
+            elif isinstance(card, SubspaceBeacon):
+                for i, j in ((self.x - 1, self.y), (self.x + 1, self.y), (self.x, self.y + 2), 
+                             (self.x, self.y - 2), (self.x - 2, self.y + 2), 
+                             (self.x + 2, self.y + 2), (self.x - 2, self.y - 2), 
+                             (self.x + 2, self.y - 2)):
+                    if (j > 0 and i > 0 and j <= self.gameboard.height and 
+                        i <= self.gameboard.width):
+                        if self.gameboard.occupant(i, j) == 0:
+                            self.gameboard.board[self.gameboard.height - j]\
+                            [i - 1]["alive"] = SubspaceBeacon()
 
         elif isinstance(card, Spell):
             if isinstance(card, HoloDetect):
                 # TODO - FLYING SPELL, CHECK FOR CASTABLE SQUARES
                 pass
 
+            elif isinstance(card, Virus) or isinstance(card, EMP):
+                self.hand[self.hand.index(card)] = 0
+                # TODO - NEITHER OF THESE SPELLS REQUIRE LINE OF SIGHT
+
             else:
                 self.hand[self.hand.index(card)] = 0
-                # TODO - ALTERNATE SPELLS, CHECK FOR CASTABLE SQUARES
+                # TODO - ALL THESE SPELLS REQUIRE LINE OF SIGHT
 
         elif isinstance(card, Upgrade):
             # remove card from hand
@@ -468,6 +520,9 @@ class Upgrade(object):
         # all upgrades are tech except for symbiont
         self.alignment = 1
         self.commander = 0
+        # upgrades don't need coordinates but it's easier this way
+        self.x = 0
+        self.y = 0
 
 class TechnologyOne(Upgrade):
     def __init__(self):

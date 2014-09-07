@@ -128,3 +128,23 @@ class Predator(creatures.Creature):
 class Spideroid(creatures.Creature):
     def __init__(self):
         super(Spideroid, self).__init__("Spideroid", 0.2, 8, 8, 6, 8, 2)
+
+class Fortress(structures.Structure):
+    def __init__(self):
+        self.name = "Fortress"
+        self.probability = 0.6
+
+class GunTurret(structures.Structure):
+    def __init__(self):
+        self.name = "Gun Turret"
+        self.probability = 0.5
+
+class SubspaceBeacon(structures.Structure):
+    def __init__(self):
+        self.name = "Subspace Beacon"
+        self.probability = 0.9
+
+class ForceField(structures.Structure):
+    def __init__(self):
+        self.name = "Force Field"
+        self.probability = 0.9

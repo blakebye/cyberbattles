@@ -16,7 +16,7 @@ class GunTurret(Structure):
 
 class SubspaceBeacon(Structure):
     def __init__(self):
-        self.name = "SubspaceBeacon"
+        self.name = "Subspace Beacon"
         self.probability = 0.9
         self.alignment = 1
 

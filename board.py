@@ -12,73 +12,82 @@ class Gameboard(object):
     kill creatures, structures, and commanders, and one to cast all the spells.
     """
     def __init__(self, number_of_players):
+        # assign the number of players so the board knows
         self.number_of_players = number_of_players
-        self.commanders = []
+
+        # alignment (toward technology/lifeforce) will give
+        # increased chances that similarly aligned things will occur
+        self.alignment = 0
+
         # each spot in the w x h grid should be filled with a living/dead
-        # dictionary so that creatures and corpses can share a square
+        # dictionary so that creatures and corpses can share a square without
+        # conflict
         self.board = [[{"alive": 0, "dead": 0} for x in range(15)]
                                                for y in range(10)]
 
-        # get it started
-        self.spawn_commanders()
-
-        # alignment determines chances of things occurring
-        self.alignment = 0
+        # put players on the board
+        self.commanders = self.spawn_commanders()
 
         # after all commanders have taken their turn, the next round begins
         self.round = 1
 
-        # to be used across the top of the board as it updates
+        # status to be used across the top of the board as it updates
         self.message = "CYBERBATTLES"
 
     def print_board(self):
         """
-        Just draws out the board in the terminal, with units represented
-        as the first letter in their name.
+        Draws out the board in the terminal, with units represented
+        as the first letter in their name. Also prints the alignment of the
+        board and the last status message, which may indicate someone's turn
+        or a spell success.
         """
-        # always print the alignment above the board
+
+        # display the alignment properly
         if self.alignment == 0:
             align = "<none>"
         elif self.alignment > 0:
             align = "Technology %i" % abs(self.alignment)
         elif self.alignment < 0:
             align = "Lifeforce %i" % abs(self.alignment)
+
+        # always print out the message and alignment above the board
         print("%s - ALIGNMENT: %s" % (self.message, align))
 
         # this is some formatting that creates a grid for the board, and 
         # prints out the first letter of whatever is on a space.  the letter
         # will be lowercase if it's a corpse.
+
+        # top border
         print('-' * (15 * 4 + 1), sep='')
+
+        # for every row
         for row in range(len(self.board)):
+            # left border
             print('|', end='')
+
+            # we'll populate this list with the whole row at once
             list_of_elements = []
-            counter = 0
             for element in self.board[row]:
-                if element == 0:
-                    list_of_elements.append(0)
+                list_of_elements.append(element)
+
+            # go through each element
+            for element in list_of_elements:
+                # if there's something alive there, print out the first letter
+                if element["alive"] != 0:
+                    print (" {}".format(element["alive"].name[0]), 
+                           sep='', end=" |")
+
+                # if there's a corpse, print out a lowercase first letter
+                elif element["dead"] != 0:
+                    print (" {}".format(element["dead"].name[0].lower()), 
+                           sep='', end=" |")
+
+                # nothing is on the square at all, print a space
                 else:
-                    list_of_elements.append(element)
-            for square in list_of_elements:
-                counter += 1
-                if counter == 15:
-                    if square["alive"] != 0:
-                        print (" {}".format(square["alive"].name[0]), 
-                               sep='', end=' ')
-                    elif square["dead"] != 0:
-                        print (" {}".format(square["dead"].name[0].lower()), 
-                               sep='', end=' ')
-                    else:
-                        print (" {}".format(" "), sep='', end=' ')
-                else:
-                    if square["alive"] != 0:
-                        print (" {}".format(square["alive"].name[0]), 
-                               sep='', end=' |')
-                    elif square["dead"] != 0:
-                        print (" {}".format(square["dead"].name[0].lower()), 
-                               sep='', end=' |')
-                    else:
-                        print (" {}".format(" "), sep='', end=' |')
-            print ('|')
+                    print (" {}".format(" "), sep='', end=" |")
+            # next line
+            print("")
+            # bottom border for every line
             print('-' * (15 * 4 + 1), sep='')
 
     def spawn_commander(self, commander, j, i):
@@ -98,52 +107,54 @@ class Gameboard(object):
         """
 
         # create a commander for each player
-        self.commanders = [cards.Commander() for _ in 
-                           range(self.number_of_players)]
+        commanders = [cards.Commander() for _ in 
+                      range(self.number_of_players)]
 
         # assign each commander its name and board controller
-        for c in self.commanders:
+        for c in commanders:
             c.gameboard = self
-            c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
+            c.name = "COMMANDER %i" % (commanders.index(c) + 1)
 
         # assign very specific starting positions based on number of players
         if self.number_of_players == 1:
             # centralize the only player, for testing things
-            self.spawn_commander(self.commanders[0], 4, 7)
+            self.spawn_commander(commanders[0], 4, 7)
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
-            self.spawn_commander(self.commanders[0], 4, 1)
-            self.spawn_commander(self.commanders[1], 4, 13)
+            self.spawn_commander(commanders[0], 4, 1)
+            self.spawn_commander(commanders[1], 4, 13)
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
             # and one centrally located along the top
-            self.spawn_commander(self.commanders[0], 0, 7)
-            self.spawn_commander(self.commanders[1], 9, 0)
-            self.spawn_commander(self.commanders[2], 9, 14)
+            self.spawn_commander(commanders[0], 0, 7)
+            self.spawn_commander(commanders[1], 9, 0)
+            self.spawn_commander(commanders[2], 9, 14)
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
-            self.spawn_commander(self.commanders[0], 1, 1)
-            self.spawn_commander(self.commanders[1], 1, 13)
-            self.spawn_commander(self.commanders[2], 9, 1)
-            self.spawn_commander(self.commanders[3], 9, 13)
+            self.spawn_commander(commanders[0], 1, 1)
+            self.spawn_commander(commanders[1], 1, 13)
+            self.spawn_commander(commanders[2], 9, 1)
+            self.spawn_commander(commanders[3], 9, 13)
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
             # setup, with 1 near the top 3-player commander and 2 along the
             # bottom, at 1/3 intervals
-            self.spawn_commander(self.commanders[0], 1, 7)
-            self.spawn_commander(self.commanders[1], 4, 1)
-            self.spawn_commander(self.commanders[2], 4, 13)
-            self.spawn_commander(self.commanders[3], 9, 4)
-            self.spawn_commander(self.commanders[4], 9, 10)
+            self.spawn_commander(commanders[0], 1, 7)
+            self.spawn_commander(commanders[1], 4, 1)
+            self.spawn_commander(commanders[2], 4, 13)
+            self.spawn_commander(commanders[3], 9, 4)
+            self.spawn_commander(commanders[4], 9, 10)
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
             # setup and one commander symmetrically on the bottom
-            self.spawn_commander(self.commanders[0], 1, 1)
-            self.spawn_commander(self.commanders[1], 1, 7)
-            self.spawn_commander(self.commanders[2], 1, 13)
-            self.spawn_commander(self.commanders[3], 9, 1)
-            self.spawn_commander(self.commanders[4], 9, 7)
-            self.spawn_commander(self.commanders[5], 9, 13)
+            self.spawn_commander(commanders[0], 1, 1)
+            self.spawn_commander(commanders[1], 1, 7)
+            self.spawn_commander(commanders[2], 1, 13)
+            self.spawn_commander(commanders[3], 9, 1)
+            self.spawn_commander(commanders[4], 9, 7)
+            self.spawn_commander(commanders[5], 9, 13)
+
+        return commanders
             
     def beam_creature(self, x, y, creature):
         #don't beam a creature onto another living creature
@@ -182,6 +193,10 @@ class Gameboard(object):
         """This function takes a square and returns the living unit on it."""
         return self.board[10 - y][x - 1]["alive"]
 
+    def occupy(self, x, y, unit):
+        """This function takes a square and an object and places it there."""
+        self.board[10 - y][x - 1]["alive"] = unit
+
     def coordinates(self, i, j):
         """This function takes array coordinates and returns their x, y."""
         return (j + 1, 10 - i)
@@ -196,13 +211,13 @@ class Gameboard(object):
         was real, leave a corpse. If hologram, just destroy it.
         """
         if self.occupant(x, y).holograph != True:
-            self.board[self.height - y][x - 1]["dead"] = \
-            self.board[self.height - y][x - 1]["alive"]
-        self.board[self.height - y][x - 1]["alive"] = 0
+            self.board[10 - y][x - 1]["dead"] = \
+            self.board[10 - y][x - 1]["alive"]
+        self.board[10 - y][x - 1]["alive"] = 0
 
     def kill_structure(self, x, y):
         """This function takes a square and destroys the structure on it."""
-        self.board[self.height - y][x - 1]["alive"] = 0
+        self.board[10 - y][x - 1]["alive"] = 0
 
     def kill_commander(self, x, y, commander):
         """This function takes a square and destroys the commander on it."""

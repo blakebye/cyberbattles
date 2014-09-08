@@ -14,13 +14,10 @@ class Gameboard(object):
     def __init__(self, number_of_players):
         self.number_of_players = number_of_players
         self.commanders = []
-        self.board = []
         # each spot in the w x h grid should be filled with a living/dead
         # dictionary so that creatures and corpses can share a square
-        for row in range(10):
-            self.board.append([])
-            for column in range(15):
-                self.board[row].append({"alive": 0, "dead": 0})
+        self.board = [[{"alive": 0, "dead": 0} for x in range(15)]
+                                               for y in range(10)]
 
         # get it started
         self.spawn_commanders()
@@ -84,116 +81,69 @@ class Gameboard(object):
             print ('|')
             print('-' * (15 * 4 + 1), sep='')
 
+    def spawn_commander(self, commander, j, i):
+        """
+        This function is a helper to spawn_commanders that just cleans it up a
+        bit.  It takes a commander and a pair of indices, and then places that
+        commander at those indices and gives the commander his coordinates.
+        """
+        self.board[j][i]["alive"] = commander
+        commander.x, commander.y = self.coordinates(j, i)
+
     def spawn_commanders(self):
         """
         This function takes the number of players on the Gameboard, up to 6,
         and places the commanders on the board in opening squares that are far
         from one another, symmetrically.
         """
+
+        # create a commander for each player
+        self.commanders = [cards.Commander() for _ in 
+                           range(self.number_of_players)]
+
+        # assign each commander its name and board controller
+        for c in self.commanders:
+            c.gameboard = self
+            c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
+
+        # assign very specific starting positions based on number of players
         if self.number_of_players == 1:
             # centralize the only player, for testing things
-            self.commanders = [cards.Commander() for _ in range(1)]
-            for c in self.commanders:
-                c.gameboard = self
-                c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
-
-            self.board[4][7]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(4, 7)
-
+            self.spawn_commander(self.commanders[0], 4, 7)
         elif self.number_of_players == 2:
             # the players should be far left and right halfway down the board
-            self.commanders = [cards.Commander() for _ in range(2)]
-            for c in self.commanders:
-                c.gameboard = self
-                c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
-
-            self.board[4][1]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(4, 1)
-
-            self.board[4][13]["alive"] = self.commanders[1]
-            self.commanders[1].x, self.commanders[1].y = self.coordinates(4, 13)
-
+            self.spawn_commander(self.commanders[0], 4, 1)
+            self.spawn_commander(self.commanders[1], 4, 13)
         elif self.number_of_players == 3:
             # this puts commanders in the bottom left/right corner,
             # and one centrally located along the top
-            self.commanders = [cards.Commander() for _ in range(3)]
-            for c in self.commanders:
-                c.gameboard = self
-
-            self.board[0][7]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(0, 7)
-
-            self.board[9][0]["alive"] = self.commanders[1]
-            self.commanders[1].x, self.commanders[1].y = self.coordinates(9, 0)
-
-            self.board[9][14]["alive"] = self.commanders[2]
-            self.commanders[2].x, self.commanders[2].y = self.coordinates(9, 14)
-
+            self.spawn_commander(self.commanders[0], 0, 7)
+            self.spawn_commander(self.commanders[1], 9, 0)
+            self.spawn_commander(self.commanders[2], 9, 14)
         elif self.number_of_players == 4:
             # the players form a rectangle that mimics the board shape
-            self.commanders = [cards.Commander() for _ in range(4)]
-            for c in self.commanders:
-                c.gameboard = self
-
-            self.board[1][1]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(1, 1)
-
-            self.board[1][13]["alive"] = self.commanders[1]
-            self.commanders[1].x, self.commanders[1].y = self.coordinates(1, 13)
-
-            self.board[9][1]["alive"] = self.commanders[2]
-            self.commanders[2].x, self.commanders[2].y = self.coordinates(9, 1)
-
-            self.board[9][13]["alive"] = self.commanders[3]
-            self.commanders[3].x, self.commanders[3].y = self.coordinates(9, 13)
-
+            self.spawn_commander(self.commanders[0], 1, 1)
+            self.spawn_commander(self.commanders[1], 1, 13)
+            self.spawn_commander(self.commanders[2], 9, 1)
+            self.spawn_commander(self.commanders[3], 9, 13)
         elif self.number_of_players == 5:
             # the commanders are placed in a pentagram copying the 2 player
             # setup, with 1 near the top 3-player commander and 2 along the
             # bottom, at 1/3 intervals
-            self.commanders = [cards.Commander() for _ in range(5)]
-            for c in self.commanders:
-                c.gameboard = self
-
-            self.board[1][7]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(1, 7)
-
-            self.board[4][1]["alive"] = self.commanders[1]
-            self.commanders[1].x, self.commanders[1].y = self.coordinates(4, 1)
-
-            self.board[4][13]["alive"] = self.commanders[2]
-            self.commanders[2].x, self.commanders[2].y = self.coordinates(4, 13)
-
-            self.board[9][4]["alive"] = self.commanders[3]
-            self.commanders[3].x, self.commanders[3].y = self.coordinates(9, 4)
-
-            self.board[9][10]["alive"] = self.commanders[4]
-            self.commanders[4].x, self.commanders[4].y = self.coordinates(9, 10)
-
+            self.spawn_commander(self.commanders[0], 1, 7)
+            self.spawn_commander(self.commanders[1], 4, 1)
+            self.spawn_commander(self.commanders[2], 4, 13)
+            self.spawn_commander(self.commanders[3], 9, 4)
+            self.spawn_commander(self.commanders[4], 9, 10)
         elif self.number_of_players == 6:
             # 6 is a copy of 4, with the top commander from the 5-player
             # setup and one commander symmetrically on the bottom
-            self.commanders = [cards.Commander() for _ in range(6)]
-            for c in self.commanders:
-                c.gameboard = self
-
-            self.board[1][1]["alive"] = self.commanders[0]
-            self.commanders[0].x, self.commanders[0].y = self.coordinates(1, 1)
-
-            self.board[1][7]["alive"] = self.commanders[1]
-            self.commanders[1].x, self.commanders[1].y = self.coordinates(1, 7)
-
-            self.board[1][13]["alive"] = self.commanders[2]
-            self.commanders[2].x, self.commanders[2].y = self.coordinates(1, 13)
-
-            self.board[9][1]["alive"] = self.commanders[3]
-            self.commanders[3].x, self.commanders[3].y = self.coordinates(9, 1)
-
-            self.board[9][7]["alive"] = self.commanders[4]
-            self.commanders[4].x, self.commanders[4].y = self.coordinates(9, 7)
-
-            self.board[9][13]["alive"] = self.commanders[5]
-            self.commanders[5].x, self.commanders[5].y = self.coordinates(9, 13)
+            self.spawn_commander(self.commanders[0], 1, 1)
+            self.spawn_commander(self.commanders[1], 1, 7)
+            self.spawn_commander(self.commanders[2], 1, 13)
+            self.spawn_commander(self.commanders[3], 9, 1)
+            self.spawn_commander(self.commanders[4], 9, 7)
+            self.spawn_commander(self.commanders[5], 9, 13)
             
     def beam_creature(self, x, y, creature):
         #don't beam a creature onto another living creature

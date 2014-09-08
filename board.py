@@ -29,10 +29,10 @@ class Gameboard(object):
         self.alignment = 0
 
         # after all commanders have taken their turn, the next round begins
-        round_count = 1
+        self.round = 1
 
         # to be used across the top of the board as it updates
-        message = ""
+        self.message = "CYBERBATTLES"
 
     def print_board(self):
         """
@@ -46,7 +46,7 @@ class Gameboard(object):
             align = "Technology %i" % abs(self.alignment)
         elif self.alignment < 0:
             align = "Lifeforce %i" % abs(self.alignment)
-        print("ALIGNMENT: %s" % align)
+        print("%s - ALIGNMENT: %s" % (self.message, align))
 
         # this is some formatting that creates a grid for the board, and 
         # prints out the first letter of whatever is on a space.  the letter
@@ -95,6 +95,7 @@ class Gameboard(object):
             self.commanders = [cards.Commander() for _ in range(1)]
             for c in self.commanders:
                 c.gameboard = self
+                c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
 
             self.board[4][7]["alive"] = self.commanders[0]
             self.commanders[0].x, self.commanders[0].y = self.coordinates(4, 7)
@@ -104,6 +105,7 @@ class Gameboard(object):
             self.commanders = [cards.Commander() for _ in range(2)]
             for c in self.commanders:
                 c.gameboard = self
+                c.name = "COMMANDER %i" % (self.commanders.index(c) + 1)
 
             self.board[4][1]["alive"] = self.commanders[0]
             self.commanders[0].x, self.commanders[0].y = self.coordinates(4, 1)
@@ -195,7 +197,7 @@ class Gameboard(object):
             
     def beam_creature(self, x, y, creature):
         #don't beam a creature onto another living creature
-        if self.board[self.height - y][x - 1]["alive"] == 0:
+        if self.board[10 - y][x - 1]["alive"] == 0:
             # if the board and the creature share alignments, 
             # give a boost over the normal probability
             r = random.randint(1, 10) / 10.0
@@ -207,7 +209,7 @@ class Gameboard(object):
 
             # beam worked, place it on the board
             if success >= r:
-                self.message = "SUCCESS"
+                self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
                 self.board[10 - y][x - 1]["alive"] = creature
                 creature.x, creature.y = x, y
             else:
@@ -219,7 +221,7 @@ class Gameboard(object):
         # don't holo onto existing living thing
         if self.board[10 - y][x - 1]["alive"] == 0:
             # holograms are successful 100% of the time
-            self.message = "SUCCESS"
+            self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
             self.board[10 - y][x - 1]["alive"] = creature
             creature.holograph = True
             creature.x, creature.y = x, y
@@ -263,7 +265,10 @@ class Gameboard(object):
         """
         This function will determine a round over, and proceed to the next round
         """
-        if self.round_count >= 35:
+        for commander in self.commanders:
+            for creature in commander.creatures:
+                creature.moved = False
+        if self.round >= 35:
             message = "Game Over, result is DRAW"
         else:
-            self.round_count += 1
+            self.round += 1

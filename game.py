@@ -14,11 +14,8 @@ gameboard.beam_creature(7, 7, d)
 while gameboard.round < 35:
     # select card
     for player_number in range(players):
-        gameboard.print_board()
         player = gameboard.commanders[player_number]
-        player.print_hand() 
-        i = int(raw_input("Which card would you like to play? ")) - 1
-        player.play_card(player.hand[i])
+        player.play_card()
 
     # target card, if necessary
     for player_number in range(players):

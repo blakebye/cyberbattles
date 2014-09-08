@@ -22,68 +22,208 @@ class Creature(object):
         self.x = 0
         self.y = 0
         self.commander = 0
+        self.movement = 0
+        self.moved = False
 
-    def move(self):
-        self.movement = self.speed
-        while self.movement >= 1:
-            lateral_squares = []
-            diagonal_squares = []
-            for i, j in ((self.x - 1, self.y), 
-                         (self.x, self.y + 1),
-                         (self.x, self.y - 1), 
-                         (self.x + 1, self.y)):
-                if self.gameboard.occupant(i, j) == 0:
-                    lateral_squares.append((i, j))
-            for i, j in ((self.x - 1, self.y - 1), 
-                         (self.x - 1, self.y + 1),
-                         (self.x + 1, self.y - 1), 
-                         (self.x + 1, self.y + 1)):
-                if self.gameboard.occupant(i, j) == 0:
-                    diagonal_squares.append((i, j))
-            for avail in lateral_squares:
-                print avail
-            for avail in diagonal_squares:
-                print avail
-            print "Enter where you'd like to move."
-            print "You have %f movement" % self.movement
-            destx, desty = (int(raw_input("X: ")), int(raw_input("Y: ")))
-            if (destx, desty) in lateral_squares:
-                self.movement -= 1
-                newj, newi = self.gameboard.indices(destx, desty)
-                self.gameboard.board[newj][newi]["alive"] = self
-
-                oldj, oldi = self.gameboard.indices(self.x, self.y)
-                self.gameboard.board[oldj][oldi]["alive"] = 0
-                self.x, self.y = (destx, desty)
-            elif (destx, desty) in diagonal_squares:
-                self.movement -= 1.5
-                newj, newi = self.gameboard.indices(destx, desty)
-                self.gameboard.board[newj][newi]["alive"] = self
-
-                oldj, oldi = self.gameboard.indices(self.x, self.y)
-                self.gameboard.board[oldj][oldi]["alive"] = 0
-                self.x, self.y = (destx, desty)
-            else:
-                print "%i %i isn't a valid move!" % (destx, desty)
+    def move(self, creature=0):
+        """
+        This function acts as two different functions. First, it neutrally calls
+        that a commander wishes to move a creature. It finds all movable pieces
+        of that commander and asks which creature to move. The function is
+        called again with that creature as a parameter. The function then finds
+        which squares the piece can travel to, how much movement it has left,
+        and if it's being forced to engage an enemy unit. It asks where to move
+        that creature and does so. If engaged to attack, asks where to attack
+        with that creature and does so.
+        """
+        # FIRST HALF OF MOVE, JUST SELECTING UNIT TO MOVE
+        if creature == 0:
+            creature_squares = []
+            for i in range(15):
+                for j in range(10): 
+                    if isinstance(self.gameboard.occupant(i + 1, j + 1), Creature):
+                        if self.gameboard.occupant(i + 1, j + 1).commander == self:
+                            if self.gameboard.occupant(i + 1, j + 1).moved == False:
+                                creature_squares.append((i + 1, j + 1))
+            self.gameboard.message = "%s's turn" % self.name
             self.gameboard.print_board()
-            adjacent_squares = []
-            for i, j in ((self.x - 1, self.y), 
-                         (self.x, self.y + 1),
-                         (self.x, self.y - 1), 
-                         (self.x + 1, self.y),
-                         (self.x - 1, self.y - 1), 
-                         (self.x - 1, self.y + 1),
-                         (self.x + 1, self.y - 1), 
-                         (self.x + 1, self.y + 1)):
-                if isinstance(self.gameboard.occupant(i, j), Creature) and \
-                   self.gameboard.occupant(i, j).commander != self:
-                    print "ENGAGED TO ATTACK"
-                    break
+            for avail in creature_squares:
+                print avail
+            print "Enter which unit you'd like to move."
+            x, y = (int(raw_input("X: ")), int(raw_input("Y: ")))
+            if (x, y) in creature_squares:
+                self.move(self.gameboard.occupant(x, y))
 
+        # MOVE IS CALLED AGAIN ON A SPECIFIC UNIT
+        else:
+            # make sure it can only move once a turn
+            creature.moved = True
+
+            # to know how far a creature can move
+            creature.movement = creature.speed
+            while creature.movement >= 1:
+                # check for valid squares
+                lateral_squares = []
+                diagonal_squares = []
+                for i, j in ((creature.x - 1, creature.y), 
+                             (creature.x, creature.y + 1),
+                             (creature.x, creature.y - 1), 
+                             (creature.x + 1, creature.y)):
+                    if self.gameboard.occupant(i, j) == 0:
+                        lateral_squares.append((i, j))
+                for i, j in ((creature.x - 1, creature.y - 1), 
+                             (creature.x - 1, creature.y + 1),
+                             (creature.x + 1, creature.y - 1), 
+                             (creature.x + 1, creature.y + 1)):
+                    if self.gameboard.occupant(i, j) == 0:
+                        diagonal_squares.append((i, j))
+
+                # make display of remaining moves look nice
+                if creature.movement % 1 == 0:
+                    self.gameboard.message = "%i movement left" % int(creature.movement)
+                else:
+                    self.gameboard.message = "%.1f movement left" % creature.movement
+                self.gameboard.print_board()
+
+                # show which squares are legal
+                for avail in lateral_squares:
+                    print avail
+                for avail in diagonal_squares:
+                    print avail
+
+                # get square to move to
+                print "Enter where you'd like to move."
+                destx, desty = (int(raw_input("X: ")), int(raw_input("Y: ")))
+
+                # ensure the move is legal
+                if ((destx, desty) in lateral_squares or 
+                    (destx, desty) in diagonal_squares):
+
+                    # get indices of new square
+                    newj, newi = self.gameboard.indices(destx, desty)
+
+                    # make new square hold the moving creature
+                    self.gameboard.board[newj][newi]["alive"] = creature
+
+                    # get indices of old square
+                    oldj, oldi = self.gameboard.indices(creature.x, creature.y)
+
+                    # make old square hold an empty square
+                    self.gameboard.board[oldj][oldi]["alive"] = 0
+
+                    # update creature's coordinates
+                    creature.x, creature.y = (destx, desty)
+
+                    # update movement after the move
+                    if (destx, desty) in lateral_squares:
+                        creature.movement -= 1
+                    elif (destx, desty) in diagonal_squares:
+                        creature.movement -= 1.5
+                    
+                # illegal move
+                else:
+                    print "%i %i isn't a valid move!" % (destx, desty)
+
+
+                # now check to see if we're engaged to an enemy
+                for i, j in ((creature.x - 1, creature.y), 
+                             (creature.x, creature.y + 1),
+                             (creature.x, creature.y - 1), 
+                             (creature.x + 1, creature.y),
+                             (creature.x - 1, creature.y - 1), 
+                             (creature.x - 1, creature.y + 1),
+                             (creature.x + 1, creature.y - 1), 
+                             (creature.x + 1, creature.y + 1)):
+                    if isinstance(self.gameboard.occupant(i, j), Creature) and \
+                       self.gameboard.occupant(i, j).commander != self:
+                        print "ENGAGED TO ATTACK"
+                        self.gameboard.print_board()
+                        creature.attack()
+                        # THE FOLLOWING SEQUENCE OF BREAK ELSE CONTINUE BREAK
+                        # IS JUST A TRICK TO BREAK OUT OF MULTIPLE LOOPS
+                        break
+                else:
+                    continue
+                    
+                break
+
+    def attack(self):
+        attackable_squares = []
+        for i, j in ((self.x - 1, self.y), 
+                     (self.x, self.y + 1),
+                     (self.x, self.y - 1), 
+                     (self.x + 1, self.y),
+                     (self.x - 1, self.y - 1),
+                     (self.x - 1, self.y + 1),
+                     (self.x + 1, self.y - 1),
+                     (self.x + 1, self.y + 1)): 
+            if isinstance(self.gameboard.occupant(i, j), Creature):
+                if self.gameboard.occupant(i, j).commander != self:
+                    attackable_squares.append((i, j))
+        for avail in attackable_squares:
+            print avail
+        print "Enter where you'd like to attack."
+        destx, desty = (int(raw_input("X: ")), int(raw_input("Y: ")))
+        if (destx, desty) in attackable_squares:
+            chance = ((self.strength - 
+                       self.gameboard.occupant(destx, desty).defense) /
+                       10.0 + 0.5)
+            r = random.randint(1, 10) / 10.0
+            if chance >= r:
+                # this makes the code readable
+                b = self.gameboard
+
+                # find indices of attacked square
+                newj, newi = b.indices(destx, desty)
+
+                # killing a commander
+                if isinstance(b.occupant(destx, desty), Commander):
+                    # look at every square on the board
+                    dying_c = b.occupant(destx, desty)
+                    for y in range(len(b.board)):
+                        for x in range(len(b.board)):
+                            # remove all dead commander's dead creatures
+                            print "THE LINE BELOW SHOULD BE A DYING COMMANDER"
+                            print b.occupant(destx, desty)
+                            for dead_creature in (dying_c.dead_creatures):
+                                if b.board[y][x]["dead"] == dead_creature:
+                                    b.board[y][x]["dead"] = 0
+                            # remove all dead commander's living creatures
+                            for living_creature in (dying_c.creatures):
+                                if b.board[y][x]["alive"] == living_creature:
+                                    b.board[y][x]["alive"] = 0
+
+                # killing any non-commander unit
+                else:
+                    # add dead creature to list of commander's dead creatures
+                    b.occupant(destx, desty).commander.dead_creatures.append(
+                    b.occupant(destx, desty))
+
+                    # remove dead creature from list of commander's creatures
+                    b.occupant(destx, desty).commander.creatures.remove(
+                    b.occupant(destx, desty))
+
+                    # create corpse if nonholograph
+                    if b.occupant(destx, desty).holograph != True:
+                        b.board[newj][newi]["dead"] = \
+                        b.board[newj][newi]["alive"]
+
+                # put attacker in new square
+                b.board[newj][newi]["alive"] = self
+
+                # find indices of attacker's old square
+                oldj, oldi = self.gameboard.indices(self.x, self.y)
+
+                # make old square's living space empty
+                self.gameboard.board[oldj][oldi]["alive"] = 0
+
+                # correct attacker's coordinates
+                self.x, self.y = (destx, desty)
             else:
-                continue
-                
-            break
+                pass
+                # FAIL
+        else:
+            print "%i %i isn't a valid attack!" % (destx, desty)
 
 
 
@@ -101,7 +241,11 @@ class Commander(Creature):
         self.x = 0
         self.y = 0
         self.hand = self.create_hand()
-        self.creatures = []
+        self.creatures = [self]
+        self.dead_creatures = []
+        self.commander = self
+        self.holograph = False
+        self.moved = False
 
     def create_hand(self):
         all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), 
@@ -127,17 +271,35 @@ class Commander(Creature):
             card.commander = self
         return hand
 
-    def play_card(self, card):
+    def print_hand(self):
+        cardnames = []
+        for card in self.hand:
+            cardnames.append(card.name)
+        h = enumerate(cardnames, 1)
+        for c in h:
+            print c
+
+    def play_card(self, card=0):
+        if card == 0:
+            self.gameboard.message = "%s's TURN" % self.name
+            self.gameboard.print_board()
+            self.print_hand()
+            i = int(raw_input("Which number card would you like to play? ")) - 1
+            self.play_card(self.hand[i])
+
         # PLAY CREATURE CARDS
-        if isinstance(card, Creature):
+        if isinstance(card, BlankCard):
+            print "INVALID CARD"
+
+        elif isinstance(card, Creature):
             # remove played card from hand
-            self.hand[self.hand.index(card)] = 0
+            self.hand[self.hand.index(card)] = BlankCard()
             # TODO - CHOICE BETWEEN BEAM AND HOLO
 
         # PLAY STRUCTURE CARDS
         elif isinstance(card, Structure):
             # remove played card from hand
-            self.hand[self.hand.index(card)] = 0
+            self.hand[self.hand.index(card)] = BlankCard()
 
             # let board alignment influence structure probability
             if self.gameboard.alignment > 0:
@@ -206,7 +368,7 @@ class Commander(Creature):
                 #     self.board[self.height - y][x - 1]["alive"] = 0
                 pass
             else:
-                self.hand[self.hand.index(card)] = 0
+                self.hand[self.hand.index(card)] = BlankCard()
 
             if isinstance(card, Virus) or isinstance(card, EMP):
                 pass
@@ -276,7 +438,7 @@ class Commander(Creature):
         # PLAY UPGRADE CARDS
         elif isinstance(card, Upgrade):
             # remove card from hand
-            self.hand[self.hand.index(card)] = 0
+            self.hand[self.hand.index(card)] = BlankCard()
 
             # let board alignment influence upgrade probability
             if self.gameboard.alignment * card.alignment > 0:
@@ -324,6 +486,10 @@ class Commander(Creature):
             else:
                 # upgrade failed
                 pass
+
+class BlankCard(object):
+    def __init__(self):
+        self.name = ""
 
 class RangedCreature(Creature):
     """This creature can attack from range and melee"""

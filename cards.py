@@ -247,7 +247,7 @@ class Commander(Creature):
                             # and not owned by me
                             if occ.commander != self:
                                 # it's targetable
-                                potential_squares.append((i, j))
+                                potential_squares.append((i + 1, j + 1))
             print potential_squares
             print "Target your Virus at one of the above squares:"
             x = int(raw_input("X: "))

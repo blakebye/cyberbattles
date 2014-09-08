@@ -23,7 +23,6 @@ while gameboard.round < 35:
 
     # move creatures
     for player_number in range(players):
-        for creatures in gameboard.commanders[player_number].creatures:
-            gameboard.commanders[player_number].move()
+        gameboard.commanders[player_number].move()
 
     gameboard.next_round()

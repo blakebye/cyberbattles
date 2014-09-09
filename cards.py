@@ -189,6 +189,7 @@ class Commander(Creature):
         self.moved = False
         self.action_card = BlankCard()
         self.holo_choice = ""
+        self.alignment = 0
 
     def create_hand(self):
         all_cards = [AlienHatchling(), Probe(), Droid(), SlimeBlob(), 
@@ -250,7 +251,7 @@ class Commander(Creature):
     def target_card(self):
         self.gameboard.message = "%s's TURN" % self.name
         self.gameboard.print_board()
-        # all upgrade cards need no targetting
+
         if isinstance(self.action_card, Upgrade):
 
             # remove card from hand
@@ -291,7 +292,6 @@ class Commander(Creature):
                 elif isinstance(self.action_card, LifeforceTwo):
                     self.gameboard.alignment -= 2
 
-        # creatures have 1 range targetting
         elif isinstance(self.action_card, Creature):
             potential_squares = []
             for i, j in ((self.x - 1, self.y + 1), (self.x, self.y + 1),
@@ -316,7 +316,6 @@ class Commander(Creature):
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
-        # holodetect has global targetting
         elif isinstance(self.action_card, HoloDetect):
             # enemy creatures
             potential_squares = []
@@ -341,8 +340,6 @@ class Commander(Creature):
             if self.gameboard.occupant(x, y).hologram == True:
                 self.gameboard.kill_creature(x, y)
 
-        # emp has global targetting
-        # todo: commander emp
         elif isinstance(self.action_card, EMP):
             # enemy tech creatures + commander
             potential_squares = []
@@ -365,8 +362,17 @@ class Commander(Creature):
             y = int(raw_input("Y: "))
             if isinstance(self.gameboard.occupant(x, y), Commander):
                 if self.rng():
-                    # todo: check commander resistance, potentially kill all tech
-                    pass
+                    # 20% chance, 10% chance with symbiont
+                    r = random.randint(4, 8)
+                    if self.gameboard.occupant(x, y).resist <= r:
+                        # get the commanders creatures
+                        c_list = self.gameboard.occupant(x, y).creatures
+                        for c in c_list:
+                            # if they're tech
+                            if c.alignment > 0:
+                                # kill them
+                                self.gameboard.kill_creature(c.x, c.y)
+
             else:
                 if self.rng():
                     self.gameboard.kill_creature(x, y)
@@ -374,8 +380,6 @@ class Commander(Creature):
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
-        # virus has global targetting
-        # todo: commander virus
         elif isinstance(self.action_card, Virus):
             # enemy life creatures + commander
             potential_squares = []
@@ -397,9 +401,17 @@ class Commander(Creature):
             x = int(raw_input("X: "))
             y = int(raw_input("Y: "))
             if isinstance(self.gameboard.occupant(x, y), Commander):
-                if self.rng():   
-                    # todo: check commander resistance, potentially kill all life
-                    pass
+                if self.rng():
+                    # 20% chance, 10% chance with symbiont
+                    r = random.randint(4, 8)
+                    if self.gameboard.occupant(x, y).resist <= r:
+                        # get the commanders creatures
+                        c_list = self.gameboard.occupant(x, y).creatures
+                        for c in c_list:
+                            # if they're lifeforce
+                            if c.alignment < 0:
+                                # kill them
+                                self.gameboard.kill_creature(c.x, c.y)
             else:
                 if self.rng():
                     self.gameboard.kill_creature(x, y)
@@ -407,7 +419,6 @@ class Commander(Creature):
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
-        # fortress is only structure that requires targetting
         elif isinstance(self.action_card, Fortress):
             potential_squares = []
             for i, j in ((self.x - 1, self.y + 1), (self.x, self.y + 1),
@@ -427,7 +438,7 @@ class Commander(Creature):
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
-        # all other structures require no targetting
+        # todo: figure out how to make gun turrets work
         elif isinstance(self.action_card, Structure):
 
             # remove played card from hand
@@ -472,6 +483,7 @@ class Commander(Creature):
                                 self.gameboard.board[10 - j]\
                                 [i - 1]["alive"] = SubspaceBeacon()                
 
+        # todo: big picture: make sure status messages work
         elif isinstance(self.action_card, Mutate):
             targetable_squares = []
             rangelist = self.squares_in_range(self.action_card.cast_range)
@@ -486,10 +498,8 @@ class Commander(Creature):
                     if isinstance(occ, Creature):
                         # and not a commander
                         if not isinstance(occ, Commander):
-                            # and not owned by me
-                            if occ.commander != self:
-                                # it's targetable
-                                potential_squares.append((i + 1, j + 1))
+                            # it's targetable
+                            potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Mutate in one of the above squares:"
             x = int(raw_input("X: "))
@@ -682,7 +692,7 @@ class Commander(Creature):
     def move(self):
         self.gameboard.message = "%s's TURN" % self.name
         self.gameboard.print_board()
-        pass
+        # TODO - IMPLEMENT MOVE LOL
 
 # ALL CARDS ARE IN THIS FOLD
 class BlankCard(object):
@@ -826,7 +836,7 @@ class SentryRobot(Creature):
 
 class Alien(Creature):
     def __init__(self):
-        super(Alien, self).__init__("Alien", 0.7, 3, 3, 2, 5, 2)
+        super(Alien, self).__init__("Alien", 0.7, 3, 3, 2, 5, -2)
 
 class FireFox(Mount):
     def __init__(self):

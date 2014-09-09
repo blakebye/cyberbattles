@@ -25,6 +25,41 @@ class Creature(object):
         self.movement = speed
         self.moved = False
 
+    def in_range(self, x1, y1, reach):
+        """
+        This function creates an array that displays the minimum number of
+        movements it would take to move to that targetted square if lateral
+        movements take 1 unit and diagonal movements take 1.5 units. It then
+        checks the specific square in the function against the reach and returns
+        whether or not that square could be touched with that much range.
+        """
+        # only create a square for as far as we need to
+        x = abs(x1 - self.x)
+        y = abs(y1 - self.y)
+        dimension = max(x, y) + 1
+
+        # create the square
+        moves = [[0.0 for j in range(dimension)] for i in range(dimension)]
+
+        # fill the square with the correct values
+        for i in range(dimension):
+            for j in range(dimension):
+                if j == 0 or i == 0:
+                    moves[i][j] = float(x + y)
+                elif j <= i:
+                    moves[i][j] = moves[i][j - 1] + 0.5
+                else:
+                    moves[i][j] = moves[i][j - 1] + 1
+
+        # make sure they're rounded down to integer
+        for y in range(dimension):
+            for x in range(dimension):
+                moves[y][x] = int(moves[y][x])
+
+        # return if it's in range or not
+        return moves[y1][x1] <= reach
+        
+
     def sees(self, x1, y1):
         """
         This function is Bresenham's line creation algorithm. It takes two

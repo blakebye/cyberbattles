@@ -818,6 +818,38 @@ class FlyingCreature(Creature):
                                             defense, speed, resist, alignment)
         self.flight = True
 
+    def move(self):
+        self.moved = True
+        attackable_squares = []
+        movable_squares = []
+        # check all surrounding squares for vacancies or enemies to attack
+        for square in self.squares_in_range(self.speed):
+            occ = self.gameboard.occupant(square[0], square[1])
+            if isinstance(occ, Creature) and occ.commander != self:
+                attackable_squares.append((square[0], square[1]))
+            elif occ == 0:
+                movable_squares.append((square[0], square[1]))
+        print movable_squares + attackable_squares
+        print "Where would you like to move/attack?"
+        x = int(raw_input("X: "))
+        y = int(raw_input("Y: "))
+        # we're attacking an enemy square
+        if (x, y) in attackable_squares:
+            self.attack()
+            return
+
+        if (x, y) in movable_squares:
+            self.gameboard.occupy(self.x, self.y, 0)
+            self.gameboard.occupy(x, y, self)
+            self.x, self.y = x, y
+            # check our landing point for engagements
+            for square in self.squares_in_range(1):
+                occ = self.gameboard.occupant(square[0], square[1])
+                if (isinstance(occ, Creature) and 
+                    occ.commander != self.commander):
+                    self.attack()
+                    return
+
 class SlimyCreature(Creature):
     """This creature can't be melee attacked by non-slime creatures"""
     def __init__(self, name, probability, strength,

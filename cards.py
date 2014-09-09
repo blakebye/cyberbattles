@@ -421,13 +421,12 @@ class Commander(Creature):
 
         elif isinstance(self.action_card, Fortress):
             potential_squares = []
-            for i, j in ((self.x - 1, self.y + 1), (self.x, self.y + 1),
-                         (self.x + 1, self.y + 1), (self.x - 1, self.y),
-                         (self.x + 1, self.y), (self.x - 1, self.y - 1),
-                         (self.x, self.y - 1), (self.x + 1, self.y - 1)):
-                if i >= 1 and j >= 1 and i <= 15 and i <= 10:
-                    if self.gameboard.occupant(i, j) == 0:
-                        potential_squares.append((i, j))
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    if (self.y + i >= 1 and self.x + j >= 1 and 
+                        self.y + i <= 10 and self.x + j <= 15):
+                        if self.gameboard.occupant(self.x + j, self.y + i) == 0:
+                            potential_squares.append((self.x + j, self.y + i))
             print potential_squares
             print "Target your Fortress in one of the above squares:"
             x = int(raw_input("X: "))

@@ -210,11 +210,35 @@ class Creature(object):
                     movement -= 1.5
                 self.x, self.y = x, y
                 # check our landing point for engagements
+                engaged = False
                 for square in self.squares_in_range(1):
                     occ = self.gameboard.occupant(square[0], square[1])
                     if (isinstance(occ, Creature) and 
                         occ.commander != self.commander):
-                        self.attack()
+                        engaged = True
+                if engaged == True:
+                    self.gameboard.message = "YOU ARE ENGAGED TO AN ENEMY"
+                    self.gameboard.print_board()
+                    # check the 8 surrounding squares for vacancies or enemies to attack
+                    attackable_squares = []
+                    for square in self.squares_in_range(1):
+                        occ = self.gameboard.occupant(square[0], square[1])
+                        if (isinstance(occ, Creature) and 
+                            occ.commander != self.commander):
+                            attackable_squares.append((square[0], square[1]))
+                    print attackable_squares
+                    print "Which square would you like to attack?"
+                    x = raw_input("X: ")
+                    if x == "q" or x == "":
+                        return
+                    x = int(x)
+                    y = raw_input("Y: ")
+                    if y == "q" or y == "":
+                        return
+                    y = int(y)
+                    # we're attacking an enemy square
+                    if (x, y) in attackable_squares:
+                        self.attack(x, y)
                         return
 
             while movement >= 1:
@@ -255,12 +279,37 @@ class Creature(object):
                         movement -= 1.5
                     self.x, self.y = x, y
                     # check our landing point for engagements
+                    engaged = False
                     for square in self.squares_in_range(1):
                         occ = self.gameboard.occupant(square[0], square[1])
                         if (isinstance(occ, Creature) and 
                             occ.commander != self.commander):
-                            self.attack()
+                            engaged = True
+                    if engaged == True:
+                        self.gameboard.message = "YOU ARE ENGAGED TO AN ENEMY"
+                        self.gameboard.print_board()
+                        # check the 8 surrounding squares for vacancies or enemies to attack
+                        attackable_squares = []
+                        for square in self.squares_in_range(1):
+                            occ = self.gameboard.occupant(square[0], square[1])
+                            if (isinstance(occ, Creature) and 
+                                occ.commander != self.commander):
+                                attackable_squares.append((square[0], square[1]))
+                        print attackable_squares
+                        print "Which square would you like to attack?"
+                        x = raw_input("X: ")
+                        if x == "q" or x == "":
                             return
+                        x = int(x)
+                        y = raw_input("Y: ")
+                        if y == "q" or y == "":
+                            return
+                        y = int(y)
+                        # we're attacking an enemy square
+                        if (x, y) in attackable_squares:
+                            self.attack(x, y)
+                            return
+
         else:
             self.moved = True
             attackable_squares = []
@@ -292,36 +341,91 @@ class Creature(object):
                 self.gameboard.occupy(x, y, self)
                 self.x, self.y = x, y
                 # check our landing point for engagements
+                engaged = False
                 for square in self.squares_in_range(1):
                     occ = self.gameboard.occupant(square[0], square[1])
                     if (isinstance(occ, Creature) and 
                         occ.commander != self.commander):
-                        self.attack()
+                        engaged = True
+                if engaged == True:
+                    self.gameboard.message = "YOU ARE ENGAGED TO AN ENEMY"
+                    self.gameboard.print_board()
+                    # check the 8 surrounding squares for vacancies or enemies to attack
+                    attackable_squares = []
+                    for square in self.squares_in_range(1):
+                        occ = self.gameboard.occupant(square[0], square[1])
+                        if (isinstance(occ, Creature) and 
+                            occ.commander != self.commander):
+                            attackable_squares.append((square[0], square[1]))
+                    print attackable_squares
+                    print "Which square would you like to attack?"
+                    x = raw_input("X: ")
+                    if x == "q" or x == "":
+                        return
+                    x = int(x)
+                    y = raw_input("Y: ")
+                    if y == "q" or y == "":
+                        return
+                    y = int(y)
+                    y = int(y)
+                    # we're attacking an enemy square
+                    if (x, y) in attackable_squares:
+                        self.attack(x, y)
                         return
 
         if self.range > 1:
             self.gameboard.print_board()
             in_range = self.squares_in_range(self.range)
             seen = self.squares_seen()
-            attackable_squares = list(set(in_range) & set(seen))
-            for square in attackable_squares:
+            a = list(set(in_range) & set(seen))
+            attackable_squares = a[:]
+            for square in a:
                 occ = self.gameboard.occupant(square[0], square[1])
                 # TODO - FIX FOR SUBSPACE/TURRET
                 if not isinstance(occ, Creature):
                     attackable_squares.remove((square[0], square[1]))
+                    print "rm %i, %i. not creature" % (square[0], square[1])
                 if occ != 0:
                     if occ.commander == self.commander:
                         attackable_squares.remove((square[0], square[1]))
+                        print "rm %i, %i. not mine" % (square[0], square[1])
             print attackable_squares
             print "Where would you like to send your ranged attack?"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if (x, y) in attackable_squares:
-                self.attack()
+                self.range_attack(x, y)
                 return
 
-    def attack(self):
-        print "ATTACK!!!!!"
+    def attack(self, x, y):
+        strength = self.strength
+        defense = self.gameboard.occupant(x, y).defense
+        added_chance = (strength - defense)
+        r = random.randint(1, 10)
+        if 0.5 + added_chance >= r:
+            self.gameboard.kill_creature(x, y)
+            self.gameboard.occupy(self.x, self.y, 0)
+            self.gameboard.occupy(x, y, self)
+            self.x = x
+            self.y = y
+
+    def range_attack(self, x, y):
+        strength = self.rstr
+        defense = self.gameboard.occupant(x, y).defense
+        added_chance = (strength - defense)
+        r = random.randint(1, 10)
+        if 0.5 + added_chance >= r:
+            self.gameboard.kill_creature(self.gameboard.occupant(x, y))
+            self.gameboard.occupy(self.x, self.y, 0)
+            self.gameboard.occupy(x, y, self)
+            self.x = x
+            self.y = y
 
 
 class Commander(Creature):
@@ -344,7 +448,7 @@ class Commander(Creature):
         self.hologram = False
         self.moved = False
         self.action_card = BlankCard()
-        self.holo_choice = ""
+        self.holo_choice = "q"
         self.alignment = 0
 
     def create_hand(self):
@@ -395,14 +499,23 @@ class Commander(Creature):
             return False
 
     def choose_card(self):
-        self.gameboard.message = "%s's TURN" % self.name
-        self.gameboard.print_board()
-        self.print_hand()
-        while isinstance(self.action_card, BlankCard):
-            i = int(raw_input("Which number card would you like to play? ")) - 1
+        while (isinstance(self.action_card, BlankCard)):
+            self.gameboard.message = "%s's TURN" % self.name
+            self.gameboard.print_board()
+            self.print_hand()
+            i = raw_input("Which number card would you like to play? ")
+            if i == "q" or i == "":
+                return
+            i = int(i) - 1
             self.action_card = self.hand[i]
-        if isinstance(self.action_card, Creature):
-            self.holo_choice = raw_input('Do you want to "Beam" or "Holo"? ')
+            if isinstance(self.action_card, Creature):
+                self.holo_choice = raw_input('Do you want to' \
+                                             ' "Beam" or "Holo"? ')
+                if self.holo_choice == "q" or self.holo_choice == "":
+                    self.action_card = BlankCard()
+                    self.choose_card()
+                    return
+
 
     def target_card(self):
         self.gameboard.message = "%s's TURN" % self.name

@@ -578,9 +578,32 @@ class Commander(Creature):
             pass
 
         elif isinstance(self.action_card, Teleport):
-            # NEED target x, y
-            pass
+            targetable_squares = []
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    # if the square is empty
+                    if occ == 0:
+                        # it's a valid target
+                        potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
+            print "Target Teleport in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            if self.rng():
+                self.gameboard.occupy(x, y, self)
+                self.gameboard.occupy(self.x, self.y, 0)
+                self.x = x
+                self.y = y
 
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
+            
         elif isinstance(self.action_card, Fire):
             # NEED target x, y
             pass

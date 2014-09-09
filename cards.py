@@ -25,6 +25,81 @@ class Creature(object):
         self.movement = speed
         self.moved = False
 
+    def sees(self, x1, y1):
+        """
+        This function is Bresenham's line creation algorithm. It takes two
+        end-points of a line on a grid and determines which points to fill in
+        between the endpoints to make the best-fitting line. The points returned
+        can be checked for occupants to determine sight.
+        """
+
+        x0, y0 = (self.x, self.y)
+        # to do the integer algorithm, we need a function(x) we can't have
+        # more than one value per x result, so the line can't be steep
+        steep = abs(y1 - y0) > abs(x1 - x0)
+        # we'll fix this by reflecting the line along y = x, the 45 degree
+        # angle line, and then we'll make sure to fix the output later
+        if steep:
+            x0, y0 = y0, x0
+            x1, y1 = y1, x1
+
+        # for ease of the algoithm, we want to step one x value at a time,
+        # so we make sure we're increasing from x0 and not decreasing
+        backward = x0 > x1
+        # we'll fix this by swapping the line's endpoints. this doesn't change
+        # the line at all, only the direction we traverse it
+        if backward:
+            x0, x1 = x1, x0
+            y0, y1 = y1, y0
+
+        # this will determine if we go up or down when the error has reached
+        # a point at which our y value will change. it's the sign of the slope
+        if y0 > y1:
+            ystep = -1
+        else:
+            ystep = 1
+
+        # this is the slope of the line. it is also the change in y for each
+        # step we take in the x direction. it will be fractional
+        dy = abs(float(y1 - y0) / float(x1 - x0))
+        # this will be a value from 0 to 1. the only importance of this value
+        # i whether it is closer to 0 or closer to 1, which will determine if
+        # we will make a corresponding step in the y direction or not
+        error = 0.0
+        # this value will reflect its corresponding x for each point on the line
+        y = y0
+        # this will be a list of all points on the line
+        line = []
+        # visit each x point between the endpoints, not inclucing the last
+        for x in range(x0, x1):
+            # reflect the resulting point back across y = x
+            # and add the resulting point to the line
+            if steep:
+                line.append((y, x))
+            # add the resuling point to the line
+            else:
+                line.append((x, y))
+            # increase the error term by the slope
+            error += dy
+            # if the error is closer to 1 than 0, then the spot where the line
+            # crosses that x value is closer to the next value than the same
+            # value, and we will bump the y to the next threshold
+            if error >= 0.5:
+                y += ystep
+                error -= 1
+        # our range didn't include the last point, and this pop will also
+        # remove the first point. this will result in only evaluating the
+        # squares between the creature and the point for obstructions
+        line.pop(0)
+        # let's assume at first that our source can see the destination
+        seen = True
+        # now check every point in the line for obstructions, and if there are
+        # any, flag seen as false because our source can't see the destination
+        for point in line:
+            if self.occupant(point[0], point[1]) != 0:
+                seen = False
+        return seen
+
 class Commander(Creature):
     """This creature is a commander."""
     def __init__(self):
@@ -148,6 +223,7 @@ class Commander(Creature):
                 elif isinstance(self.action_card, LifeforceTwo):
                     self.gameboard.alignment -= 2
 
+        # creatures have 1 range targetting
         elif isinstance(self.action_card, Creature):
             potential_squares = []
             for i, j in ((self.x - 1, self.y + 1), (self.x, self.y + 1),
@@ -170,7 +246,6 @@ class Commander(Creature):
 
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
-
 
         # holodetect has global targetting
         elif isinstance(self.action_card, HoloDetect):
@@ -328,100 +403,59 @@ class Commander(Creature):
                                 self.gameboard.board[10 - j]\
                                 [i - 1]["alive"] = SubspaceBeacon()                
 
+        elif isinstance(self.action_card, Mutate):
+            # requires a list of all_creatures
+            pass
+
+        elif isinstance(self.action_card, Hypnotize):
+            # NEED target x, y
+            # self.board[self.height - y][x - 1]["alive"] = \
+            # self.board[self.height - y][x - 1]["dead"]
+            pass
+
+        elif isinstance(self.action_card, Resurrect):
+            # NEED target x, y
+            # self.board[self.height - y][x - 1]["alive"] = \
+            # self.board[self.height - y][x - 1]["dead"]
+
+            # don't forget to remove the corpse
+            # self.board[self.height - y][x - 1]["dead"] = 0
+            pass
+
+        elif isinstance(self.action_card, Disrupt):
+            # NEED target x, y
+            # r = random.randint(5, 13)
+            # if (self.occupant(x, y).resist +
+            #     self.occupant(x, y).defense) < r:
+            #     self.kill_creature(x, y)
+            pass
+
+        elif isinstance(self.action_card, Disintegrate):
+            # NEED target x, y
+            # r = random.randint(7, 17)
+            # if (self.occupant(x, y).resist +
+            #     self.occupant(x, y).defense) < r:
+            #     self.kill_creature(x, y)
+            pass
+
+        elif isinstance(self.action_card, Teleport):
+            # NEED target x, y
+            pass
+
+        elif isinstance(self.action_card, Fire):
+            # NEED target x, y
+            pass
+
+        elif isinstance(self.action_card, AlienGoo):
+            # NEED target x, y
+            pass
+
         # reset for next card choosing
         self.action_card = BlankCard()
 
     def move(self):
         self.gameboard.print_board()
         pass
-
-    def play_card(self, card=0):
-
-        # PLAY CREATURE CARDS
-        if isinstance(card, BlankCard):
-            print "INVALID CARD"
-
-        elif isinstance(card, Creature):
-            # remove played card from hand
-            self.hand[self.hand.index(card)] = BlankCard()
-            # TODO - CHOICE BETWEEN BEAM AND HOLO
-
-        # PLAY SPELL CARDS
-        elif isinstance(card, Spell):
-            if isinstance(card, HoloDetect):
-                # TODO - FLYING SPELL, CHECK FOR CASTABLE SQUARES
-                # NEED TO GET TARGET X, Y
-                # if occupant(x, y).holograph == True:
-                #     self.board[self.height - y][x - 1]["alive"] = 0
-                pass
-            else:
-                self.hand[self.hand.index(card)] = BlankCard()
-
-            if isinstance(card, Virus) or isinstance(card, EMP):
-                pass
-                # TODO - NEITHER OF THESE SPELLS REQUIRE LINE OF SIGHT
-                # NEED TO GET TARGET X, Y
-
-            elif isinstance(card, Mutate):
-                pass
-
-            elif isinstance(card, Hypnotize):
-                # NEED target x, y
-                # self.board[self.height - y][x - 1]["alive"] = \
-                # self.board[self.height - y][x - 1]["dead"]
-                pass
-
-            elif isinstance(card, Resurrect):
-                # NEED target x, y
-                # self.board[self.height - y][x - 1]["alive"] = \
-                # self.board[self.height - y][x - 1]["dead"]
-
-                # don't forget to remove the corpse
-                # self.board[self.height - y][x - 1]["dead"] = 0
-                pass
-
-            elif isinstance(card, Disrupt):
-                # NEED target x, y
-                # r = random.randint(5, 13)
-                # if (self.occupant(x, y).resist +
-                #     self.occupant(x, y).defense) < r:
-                #     self.kill_creature(x, y)
-                pass
-
-            elif isinstance(card, Disintegrate):
-                # NEED target x, y
-                # r = random.randint(7, 17)
-                # if (self.occupant(x, y).resist +
-                #     self.occupant(x, y).defense) < r:
-                #     self.kill_creature(x, y)
-                pass
-
-            elif isinstance(card, EMP):
-                # NEED target x, y
-                # if self.occupant(x, y).alignment > 0:
-                #     self.kill_creature(x, y)
-                # ALSO COMMANDER RESISTANCE
-                pass
-
-            elif isinstance(card, Virus):
-                # NEED target x, y
-                # if self.occupant(x, y).alignment < 0:
-                #     self.kill_creature(x, y)
-                # ALSO COMMANDER RESISTANCE
-                pass
-
-            elif isinstance(card, Teleport):
-                # NEED target x, y
-                pass
-
-            elif isinstance(card, Fire):
-                # NEED target x, y
-                pass
-
-            elif isinstance(card, AlienGoo):
-                # NEED target x, y
-                pass
-
 
 # ALL CARDS ARE IN THIS FOLD
 class BlankCard(object):

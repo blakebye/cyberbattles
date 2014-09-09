@@ -78,7 +78,7 @@ class Creature(object):
         return in_range
 
         
-    def squares_seen(self, x1, y1):
+    def squares_seen(self):
         """
         This function is Bresenham's line creation algorithm. It takes two
         end-points of a line on a grid and determines which points to fill in
@@ -86,71 +86,84 @@ class Creature(object):
         can be checked for occupants to determine sight.
         """
 
-        x0, y0 = (self.x, self.y)
-        # to do the integer algorithm, we need a function(x) we can't have
-        # more than one value per x result, so the line can't be steep
-        steep = abs(y1 - y0) > abs(x1 - x0)
-        # we'll fix this by reflecting the line along y = x, the 45 degree
-        # angle line, and then we'll make sure to fix the output later
-        if steep:
-            x0, y0 = y0, x0
-            x1, y1 = y1, x1
+        seen = []
 
-        # for ease of the algoithm, we want to step one x value at a time,
-        # so we make sure we're increasing from x0 and not decreasing
-        backward = x0 > x1
-        # we'll fix this by swapping the line's endpoints. this doesn't change
-        # the line at all, only the direction we traverse it
-        if backward:
-            x0, x1 = x1, x0
-            y0, y1 = y1, y0
+        for i in range(10):
+            for j in range(15):
+                x1, y1 = (j + 1, 10 - i)
+                xorig, yorig = x1, y1
+                x0, y0 = (self.x, self.y)
 
-        # this will determine if we go up or down when the error has reached
-        # a point at which our y value will change. it's the sign of the slope
-        if y0 > y1:
-            ystep = -1
-        else:
-            ystep = 1
+                if x0 == x1 and y0 == y1:
+                    continue
+                # to do the integer algorithm, we need a function(x) we can't have
+                # more than one value per x result, so the line can't be steep
+                steep = abs(y1 - y0) > abs(x1 - x0)
+                # we'll fix this by reflecting the line along y = x, the 45 degree
+                # angle line, and then we'll make sure to fix the output later
+                if steep:
+                    x0, y0 = y0, x0
+                    x1, y1 = y1, x1
 
-        # this is the slope of the line. it is also the change in y for each
-        # step we take in the x direction. it will be fractional
-        dy = abs(float(y1 - y0) / float(x1 - x0))
-        # this will be a value from 0 to 1. the only importance of this value
-        # i whether it is closer to 0 or closer to 1, which will determine if
-        # we will make a corresponding step in the y direction or not
-        error = 0.0
-        # this value will reflect its corresponding x for each point on the line
-        y = y0
-        # this will be a list of all points on the line
-        line = []
-        # visit each x point between the endpoints, not inclucing the last
-        for x in range(x0, x1):
-            # reflect the resulting point back across y = x
-            # and add the resulting point to the line
-            if steep:
-                line.append((y, x))
-            # add the resuling point to the line
-            else:
-                line.append((x, y))
-            # increase the error term by the slope
-            error += dy
-            # if the error is closer to 1 than 0, then the spot where the line
-            # crosses that x value is closer to the next value than the same
-            # value, and we will bump the y to the next threshold
-            if error >= 0.5:
-                y += ystep
-                error -= 1
-        # our range didn't include the last point, and this pop will also
-        # remove the first point. this will result in only evaluating the
-        # squares between the creature and the point for obstructions
-        line.pop(0)
-        # let's assume at first that our source can see the destination
-        seen = True
-        # now check every point in the line for obstructions, and if there are
-        # any, flag seen as false because our source can't see the destination
-        for point in line:
-            if self.occupant(point[0], point[1]) != 0:
-                seen = False
+                # for ease of the algoithm, we want to step one x value at a time,
+                # so we make sure we're increasing from x0 and not decreasing
+                backward = x0 > x1
+                # we'll fix this by swapping the line's endpoints. this doesn't change
+                # the line at all, only the direction we traverse it
+                if backward:
+                    x0, x1 = x1, x0
+                    y0, y1 = y1, y0
+
+                # this will determine if we go up or down when the error has reached
+                # a point at which our y value will change. it's the sign of the slope
+                if y0 > y1:
+                    ystep = -1
+                else:
+                    ystep = 1
+
+                # this is the slope of the line. it is also the change in y for each
+                # step we take in the x direction. it will be fractional
+                dy = abs(float(y1 - y0) / float(x1 - x0))
+                # this will be a value from 0 to 1. the only importance of this value
+                # i whether it is closer to 0 or closer to 1, which will determine if
+                # we will make a corresponding step in the y direction or not
+                error = 0.0
+                # this value will reflect its corresponding x for each point on the line
+                y = y0
+                # this will be a list of all points on the line
+                line = []
+                # visit each x point between the endpoints, not inclucing the last
+                for x in range(x0, x1 + 1):
+                    # reflect the resulting point back across y = x
+                    # and add the resulting point to the line
+                    if steep:
+                        line.append((y, x))
+                    # add the resuling point to the line
+                    else:
+                        line.append((x, y))
+                    # increase the error term by the slope
+                    error += dy
+                    # if the error is closer to 1 than 0, then the spot where the line
+                    # crosses that x value is closer to the next value than the same
+                    # value, and we will bump the y to the next threshold
+                    if error > 0.5:
+                        y += ystep
+                        error -= 1
+                # our range didn't include the last point, and this pop will also
+                # remove the first point. this will result in only evaluating the
+                # squares between the creature and the point for obstructions
+                line.pop(0)
+                line.pop()
+                # let's assume at first that our source can see the destination
+                square_seen = True
+                # now check every point in the line for obstructions, and if there are
+                # any, flag seen as false because our source can't see the destination
+                for point in line:
+                    if self.gameboard.occupant(point[0], point[1]) != 0:
+                        square_seen = False
+
+                if square_seen == True:
+                    seen.append((xorig, yorig))
         return seen
 
 class Commander(Creature):

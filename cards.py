@@ -17,7 +17,7 @@ class Creature(object):
         self.flight = False
         self.slimy = False
         self.mount = False
-        self.holograph = False
+        self.hologram = False
         self.gameboard = 0
         self.x = 0
         self.y = 0
@@ -185,7 +185,7 @@ class Commander(Creature):
         self.creatures = [self]
         self.dead_creatures = []
         self.commander = self
-        self.holograph = False
+        self.hologram = False
         self.moved = False
         self.action_card = BlankCard()
         self.holo_choice = ""
@@ -307,6 +307,7 @@ class Commander(Creature):
             y = int(raw_input("Y: "))
             if self.holo_choice == "Holo":
                 self.gameboard.holo_creature(x, y, self.action_card)
+                self.creatures.append(self.action_card)
             else:
                 if self.rng():
                     self.gameboard.beam_creature(x, y, self.action_card)
@@ -337,7 +338,7 @@ class Commander(Creature):
             x = int(raw_input("X: "))
             y = int(raw_input("Y: "))
             # no corpse, just kill the creature
-            if self.gameboard.occupant(x, y).holograph == True:
+            if self.gameboard.occupant(x, y).hologram == True:
                 self.gameboard.kill_creature(x, y)
 
         # emp has global targetting
@@ -472,14 +473,51 @@ class Commander(Creature):
                                 [i - 1]["alive"] = SubspaceBeacon()                
 
         elif isinstance(self.action_card, Mutate):
+            targetable_squares = []
             rangelist = self.squares_in_range(self.action_card.cast_range)
             sightlist = self.squares_seen()
-            print list(set(rangelist) & set(sightlist))
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    # if it's a creature
+                    if isinstance(occ, Creature):
+                        # and not a commander
+                        if not isinstance(occ, Commander):
+                            # and not owned by me
+                            if occ.commander != self:
+                                # it's targetable
+                                potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
             print "Target Mutate in one of the above squares:"
             x = int(raw_input("X: "))
             y = int(raw_input("Y: "))
             if self.rng():
-                self.gameboard.occupy(x, y, self.action_card)
+                all_creatures = [AlienHatchling(), Probe(), Droid(), 
+                                 SlimeBlob(), LaserRobot(), FloatingEye(), 
+                                 FaceGrabber(), Jeep(), SlimeWarrior(), Drone(), 
+                                 SentryRobot(), Alien(), FireFox(), 
+                                 SlimeBeast(), Hovership(), MutantMount(), 
+                                 Cyborg(), HoverTank(), MiningDroid(), Tank(), 
+                                 FlyingSlime(), PsiLord(), PsiWarrior(), 
+                                 AcidSpitter(), Mutant(), AlienQueen(), 
+                                 MechWarrior(), Tentacle(), Predator(),
+                                 Spideroid()]
+                replacement = random.choice(all_creatures)
+                copy = self.gameboard.occupant(x, y)
+                self.gameboard.occupy(x, y, replacement)
+                replacement.hologram = copy.hologram
+                replacement.gameboard = copy.gameboard
+                replacement.x = copy.x
+                replacement.y = copy.y
+                replacement.commander = copy.commander
+                copy.commander.creatures.append(replacement)
+                copy.commander.creatures.remove(copy)
+
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Hypnotize):
             targetable_squares = []
@@ -493,7 +531,7 @@ class Commander(Creature):
                     occ = self.gameboard.occupant(i + 1, j + 1)
                     # if it's a creature
                     if isinstance(occ, Creature):
-                        # and a commander or a life unit
+                        # and not a commander
                         if not isinstance(occ, Commander):
                             # and not owned by me
                             if occ.commander != self:
@@ -504,9 +542,15 @@ class Commander(Creature):
             x = int(raw_input("X: "))
             y = int(raw_input("Y: "))
             # always hypnotize probes, 1/7 chance to get pred/spider
+            occ = self.gameboard.occupant(x, y)
             r = random.randint(2, 8)
-            if self.gameboard.occupant(x, y).resist <= r:
-                self.gameboard.occupant(x, y).commander = self
+            if occ.resist <= r:
+                occ.commander.creatures.remove(occ)
+                self.creatures.append(occ)
+                occ.commander = self
+
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Resurrect):
             # NEED target x, y

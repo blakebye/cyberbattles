@@ -188,11 +188,17 @@ class Creature(object):
             movable_squares = lateral_squares + diagonal_squares
             print movable_squares + attackable_squares
             print "Where would you like to move/attack?"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             # we're attacking an enemy square
             if (x, y) in attackable_squares:
-                self.attack()
+                self.attack(x, y)
                 return
 
             if (x, y) in movable_squares:
@@ -232,8 +238,14 @@ class Creature(object):
                 
                 print movable_squares
                 print "Where would you like to move?"
-                x = int(raw_input("X: "))
-                y = int(raw_input("Y: "))
+                x = raw_input("X: ")
+                if x == "q" or x == "":
+                    return
+                x = int(x)
+                y = raw_input("Y: ")
+                if y == "q" or y == "":
+                    return
+                y = int(y)
                 if (x, y) in movable_squares:
                     self.gameboard.occupy(self.x, self.y, 0)
                     self.gameboard.occupy(x, y, self)
@@ -262,11 +274,17 @@ class Creature(object):
                     movable_squares.append((square[0], square[1]))
             print movable_squares + attackable_squares
             print "Where would you like to move/attack?"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             # we're attacking an enemy square
             if (x, y) in attackable_squares:
-                self.attack()
+                self.attack(x, y)
                 return
 
             if (x, y) in movable_squares:
@@ -442,8 +460,14 @@ class Commander(Creature):
                         potential_squares.append((i, j))
             print potential_squares
             print "Target your Creature in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if self.holo_choice == "Holo":
                 self.gameboard.holo_creature(x, y, self.action_card)
                 self.creatures.append(self.action_card)
@@ -473,8 +497,14 @@ class Commander(Creature):
                                 potential_squares.append((i + 1, j + 1))
             print potential_squares
             print "Target your HoloDetect at one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             # no corpse, just kill the creature
             if self.gameboard.occupant(x, y).hologram == True:
                 self.gameboard.kill_creature(x, y)
@@ -497,8 +527,14 @@ class Commander(Creature):
                                 potential_squares.append((i + 1, j + 1))
             print potential_squares
             print "Target your EMP at one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if isinstance(self.gameboard.occupant(x, y), Commander):
                 if self.rng():
                     # 20% chance, 10% chance with symbiont
@@ -537,8 +573,14 @@ class Commander(Creature):
                                 potential_squares.append((i + 1, j + 1))
             print potential_squares
             print "Target your Virus at one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if isinstance(self.gameboard.occupant(x, y), Commander):
                 if self.rng():
                     # 20% chance, 10% chance with symbiont
@@ -568,8 +610,14 @@ class Commander(Creature):
                             potential_squares.append((self.x + j, self.y + i))
             print potential_squares
             print "Target your Fortress in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if self.rng():
                 self.gameboard.occupy(x, y, self.action_card)
 
@@ -640,8 +688,14 @@ class Commander(Creature):
                             potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Mutate in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if self.rng():
                 all_creatures = [AlienHatchling(), Probe(), Droid(), 
                                  SlimeBlob(), LaserRobot(), FloatingEye(), 
@@ -687,8 +741,14 @@ class Commander(Creature):
                                 potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Hypnotize in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             # always hypnotize probes, 1/7 chance to get pred/spider
             occ = self.gameboard.occupant(x, y)
             r = random.randint(2, 8)
@@ -719,8 +779,14 @@ class Commander(Creature):
                             potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Resurrect in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if self.rng():
                 dead_occ = self.gameboard.dead_occupant(x, y)
                 dead_occ.commander.dead_creatures.remove(dead_occ)
@@ -751,8 +817,14 @@ class Commander(Creature):
                             potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Disrupt in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             occ = self.gameboard.occupant(x, y)
             r = random.randint(5, 13)
             if (occ.resist + occ.defense) < r:
@@ -779,8 +851,14 @@ class Commander(Creature):
                             potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Disintegrate in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             occ = self.gameboard.occupant(x, y)
             r = random.randint(7, 17)
             if (occ.resist + occ.defense) < r:
@@ -805,8 +883,14 @@ class Commander(Creature):
                         potential_squares.append((i + 1, j + 1))
             print list(set(potential_squares) & set(targetable_squares))
             print "Target Teleport in one of the above squares:"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             if self.rng():
                 self.gameboard.occupy(x, y, self)
                 self.gameboard.occupy(self.x, self.y, 0)
@@ -837,9 +921,15 @@ class Commander(Creature):
                 if not creature.moved:
                     print str((creature.x, creature.y)) ,
             print
-            print "Which creature would you like to move?"
-            x = int(raw_input("X: "))
-            y = int(raw_input("Y: "))
+            print "Which creature would you like to move"
+            x = raw_input("X: ")
+            if x == "q" or x == "":
+                return
+            x = int(x)
+            y = raw_input("Y: ")
+            if y == "q" or y == "":
+                return
+            y = int(y)
             movable_squares = []
             attackable_squares = []
             moving_creature = self.gameboard.occupant(x, y)

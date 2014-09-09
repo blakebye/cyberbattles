@@ -177,7 +177,8 @@ class Creature(object):
             # check the 8 surrounding squares for vacancies or enemies to attack
             for square in self.squares_in_range(1):
                 occ = self.gameboard.occupant(square[0], square[1])
-                if isinstance(occ, Creature) and occ.commander != self:
+                if (isinstance(occ, Creature) and 
+                    occ.commander != self.commander):
                     attackable_squares.append((square[0], square[1]))
                 elif occ == 0:
                     if square[0] == self.x or square[1] == self.y:
@@ -280,6 +281,27 @@ class Creature(object):
                         self.attack()
                         return
 
+        if self.range > 1:
+            self.gameboard.print_board()
+            in_range = self.squares_in_range(self.range)
+            seen = self.squares_seen()
+            attackable_squares = list(set(in_range) & set(seen))
+            for square in attackable_squares:
+                occ = self.gameboard.occupant(square[0], square[1])
+                # TODO - FIX FOR SUBSPACE/TURRET
+                if not isinstance(occ, Creature):
+                    attackable_squares.remove((square[0], square[1]))
+                if occ != 0:
+                    if occ.commander == self.commander:
+                        attackable_squares.remove((square[0], square[1]))
+            print attackable_squares
+            print "Where would you like to send your ranged attack?"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            if (x, y) in attackable_squares:
+                self.attack()
+                return
+
     def attack(self):
         print "ATTACK!!!!!"
 
@@ -292,7 +314,7 @@ class Commander(Creature):
         self.defense = 5
         self.speed = 1
         self.resist = 7
-        self.range = 1
+        self.range = 0
         self.flight = False
         self.on_mount = False
         self.x = 0
@@ -388,6 +410,7 @@ class Commander(Creature):
 
                 elif isinstance(self.action_card, Blaster):
                     self.range = max(self.range, 3)
+                    self.rstr = self.strength
 
                 elif isinstance(self.action_card, LightSabre):
                     self.strength = max(self.strength, 7)
@@ -839,10 +862,6 @@ class RangedCreature(Creature):
                                              defense, speed, resist, alignment)
         self.range = range
         self.rstr = rstr
-
-    def move(self):
-        super(RangedCreature, self).move()
-
 
 class FlyingCreature(Creature):
     """This creature can move unobstructed by other creatures/structures"""

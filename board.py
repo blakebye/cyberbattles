@@ -157,21 +157,10 @@ class Gameboard(object):
         return commanders
             
     def beam_creature(self, x, y, creature):
-        # if the board and the creature share alignments, 
-        # give a boost over the normal probability
-        r = random.randint(1, 10) / 10.0
-        if (creature.alignment * self.alignment > 0):
-            success = creature.probability + abs(self.alignment) / 10.0
-        else:
-            success = creature.probability
-
-        # beam worked, place it on the board
-        if success >= r:
-            self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
-            self.occupy(x, y, creature)
-            creature.x, creature.y = x, y
-        else:
-            self.message = "CREATURE FAILURE"
+        self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
+        self.occupy(x, y, creature)
+        creature.x, creature.y = x, y
+        creature.gameboard = self
 
 
     def holo_creature(self, x, y, creature):
@@ -180,6 +169,7 @@ class Gameboard(object):
         self.occupy(x, y, creature)
         creature.hologram = True
         creature.x, creature.y = x, y
+        creature.gameboard = self
 
     def occupant(self, x, y):
         """This function takes a square and returns the living unit on it."""

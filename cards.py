@@ -553,13 +553,37 @@ class Commander(Creature):
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Resurrect):
-            # NEED target x, y
-            # self.board[self.height - y][x - 1]["alive"] = \
-            # self.board[self.height - y][x - 1]["dead"]
+            targetable_squares = []
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    dead_occ = self.gameboard.dead_occupant(i + 1, j + 1)
+                    # if nothing is alive
+                    if occ == 0:
+                        # and something is dead
+                        if isinstance(dead_occ, Creature):
+                            # it's targetable
+                            potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
+            print "Target Resurrect in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            if self.rng():
+                dead_occ = self.gameboard.dead_occupant(x, y)
+                dead_occ.commander.dead_creatures.remove(dead_occ)
+                dead_occ.commander = self
+                dead_occ.commander.creatures.append(dead_occ)
+                self.gameboard.occupy(x, y, dead_occ)
+                #  don't forget to remove the corpse
+                self.gameboard.dead_occupy(x, y, 0)
 
-            # don't forget to remove the corpse
-            # self.board[self.height - y][x - 1]["dead"] = 0
-            pass
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Disrupt):
             # NEED target x, y
@@ -603,7 +627,7 @@ class Commander(Creature):
 
             # remove played card from hand
             self.hand[self.hand.index(self.action_card)] = BlankCard()
-            
+
         elif isinstance(self.action_card, Fire):
             # NEED target x, y
             pass

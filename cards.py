@@ -474,17 +474,39 @@ class Commander(Creature):
         elif isinstance(self.action_card, Mutate):
             rangelist = self.squares_in_range(self.action_card.cast_range)
             sightlist = self.squares_seen()
-            print rangelist
-            print
-            print sightlist
-            print
             print list(set(rangelist) & set(sightlist))
+            print "Target Mutate in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            if self.rng():
+                self.gameboard.occupy(x, y, self.action_card)
 
         elif isinstance(self.action_card, Hypnotize):
+            targetable_squares = []
             rangelist = self.squares_in_range(self.action_card.cast_range)
             sightlist = self.squares_seen()
-            print list(set(rangelist) & set(sightlist))
-            pass
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    # if it's a creature
+                    if isinstance(occ, Creature):
+                        # and a commander or a life unit
+                        if not isinstance(occ, Commander):
+                            # and not owned by me
+                            if occ.commander != self:
+                                # it's targetable
+                                potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
+            print "Target Hypnotize in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            # always hypnotize probes, 1/7 chance to get pred/spider
+            r = random.randint(2, 8)
+            if self.gameboard.occupant(x, y).resist <= r:
+                self.gameboard.occupant(x, y).commander = self
 
         elif isinstance(self.action_card, Resurrect):
             # NEED target x, y

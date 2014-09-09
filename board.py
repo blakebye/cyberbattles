@@ -184,7 +184,7 @@ class Gameboard(object):
             # holograms are successful 100% of the time
             self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
             self.board[10 - y][x - 1]["alive"] = creature
-            creature.holograph = True
+            creature.hologram = True
             creature.x, creature.y = x, y
         else:
             print("ALREADY SOMETHING THERE")
@@ -210,7 +210,7 @@ class Gameboard(object):
         This function takes a square and kills the unit on it. If the unit
         was real, leave a corpse. If hologram, just destroy it.
         """
-        if self.occupant(x, y).holograph != True:
+        if self.occupant(x, y).hologram != True:
             self.board[10 - y][x - 1]["dead"] = \
             self.board[10 - y][x - 1]["alive"]
         self.board[10 - y][x - 1]["alive"] = 0

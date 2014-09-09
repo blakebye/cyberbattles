@@ -168,70 +168,32 @@ class Creature(object):
         return seen
 
     def move(self):
-        movement = float(self.speed)
-        self.moved = True
-        lateral_squares = []
-        diagonal_squares = []
-        attackable_squares = []
-        # check the 8 surrounding squares for vacancies or enemies to attack
-        for square in self.squares_in_range(1):
-            occ = self.gameboard.occupant(square[0], square[1])
-            if isinstance(occ, Creature) and occ.commander != self:
-                attackable_squares.append((square[0], square[1]))
-            elif occ == 0:
-                if square[0] == self.x or square[1] == self.y:
-                    lateral_squares.append((square[0], square[1]))
-                else:
-                    diagonal_squares.append((square[0], square[1]))
-        movable_squares = lateral_squares + diagonal_squares
-        print movable_squares + attackable_squares
-        print "Where would you like to move/attack?"
-        x = int(raw_input("X: "))
-        y = int(raw_input("Y: "))
-        # we're attacking an enemy square
-        if (x, y) in attackable_squares:
-            self.attack()
-            return
-
-        if (x, y) in movable_squares:
-            self.gameboard.occupy(self.x, self.y, 0)
-            self.gameboard.occupy(x, y, self)
-            if self.x == x or self.y == y:
-                movement -= 1
-            else:
-                movement -= 1.5
-            self.x, self.y = x, y
-            # check our landing point for engagements
-            for square in self.squares_in_range(1):
-                occ = self.gameboard.occupant(square[0], square[1])
-                if (isinstance(occ, Creature) and 
-                    occ.commander != self.commander):
-                    self.attack()
-                    return
-
-        while movement >= 1:
+        if self.flight == False:
+            movement = float(self.speed)
+            self.moved = True
             lateral_squares = []
             diagonal_squares = []
-            movable_squares = []
-             # check the 8 surrounding squares for vacancies
+            attackable_squares = []
+            # check the 8 surrounding squares for vacancies or enemies to attack
             for square in self.squares_in_range(1):
                 occ = self.gameboard.occupant(square[0], square[1])
-                if occ == 0:
+                if isinstance(occ, Creature) and occ.commander != self:
+                    attackable_squares.append((square[0], square[1]))
+                elif occ == 0:
                     if square[0] == self.x or square[1] == self.y:
                         lateral_squares.append((square[0], square[1]))
                     else:
                         diagonal_squares.append((square[0], square[1]))
             movable_squares = lateral_squares + diagonal_squares
-            if movement % 1 == 0:
-                self.gameboard.message = "%i MOVEMENT LEFT" % movement
-            else:
-                self.gameboard.message = "%.1f MOVEMENT LEFT" % movement
-            self.gameboard.print_board()
-            
-            print movable_squares
-            print "Where would you like to move?"
+            print movable_squares + attackable_squares
+            print "Where would you like to move/attack?"
             x = int(raw_input("X: "))
             y = int(raw_input("Y: "))
+            # we're attacking an enemy square
+            if (x, y) in attackable_squares:
+                self.attack()
+                return
+
             if (x, y) in movable_squares:
                 self.gameboard.occupy(self.x, self.y, 0)
                 self.gameboard.occupy(x, y, self)
@@ -239,6 +201,76 @@ class Creature(object):
                     movement -= 1
                 else:
                     movement -= 1.5
+                self.x, self.y = x, y
+                # check our landing point for engagements
+                for square in self.squares_in_range(1):
+                    occ = self.gameboard.occupant(square[0], square[1])
+                    if (isinstance(occ, Creature) and 
+                        occ.commander != self.commander):
+                        self.attack()
+                        return
+
+            while movement >= 1:
+                lateral_squares = []
+                diagonal_squares = []
+                movable_squares = []
+                 # check the 8 surrounding squares for vacancies
+                for square in self.squares_in_range(1):
+                    occ = self.gameboard.occupant(square[0], square[1])
+                    if occ == 0:
+                        if square[0] == self.x or square[1] == self.y:
+                            lateral_squares.append((square[0], square[1]))
+                        else:
+                            diagonal_squares.append((square[0], square[1]))
+                movable_squares = lateral_squares + diagonal_squares
+                if movement % 1 == 0:
+                    self.gameboard.message = "%i MOVEMENT LEFT" % movement
+                else:
+                    self.gameboard.message = "%.1f MOVEMENT LEFT" % movement
+                self.gameboard.print_board()
+                
+                print movable_squares
+                print "Where would you like to move?"
+                x = int(raw_input("X: "))
+                y = int(raw_input("Y: "))
+                if (x, y) in movable_squares:
+                    self.gameboard.occupy(self.x, self.y, 0)
+                    self.gameboard.occupy(x, y, self)
+                    if self.x == x or self.y == y:
+                        movement -= 1
+                    else:
+                        movement -= 1.5
+                    self.x, self.y = x, y
+                    # check our landing point for engagements
+                    for square in self.squares_in_range(1):
+                        occ = self.gameboard.occupant(square[0], square[1])
+                        if (isinstance(occ, Creature) and 
+                            occ.commander != self.commander):
+                            self.attack()
+                            return
+        else:
+            self.moved = True
+            attackable_squares = []
+            movable_squares = []
+            # check all surrounding squares for vacancies or enemies to attack
+            for square in self.squares_in_range(self.speed):
+                occ = self.gameboard.occupant(square[0], square[1])
+                if isinstance(occ, Creature) and occ.commander != self:
+                    attackable_squares.append((square[0], square[1]))
+                elif occ == 0:
+                    movable_squares.append((square[0], square[1]))
+            print movable_squares + attackable_squares
+            print "Where would you like to move/attack?"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            # we're attacking an enemy square
+            if (x, y) in attackable_squares:
+                self.attack()
+                return
+
+            if (x, y) in movable_squares:
+                self.gameboard.occupy(self.x, self.y, 0)
+                self.gameboard.occupy(x, y, self)
                 self.x, self.y = x, y
                 # check our landing point for engagements
                 for square in self.squares_in_range(1):
@@ -808,6 +840,10 @@ class RangedCreature(Creature):
         self.range = range
         self.rstr = rstr
 
+    def move(self):
+        super(RangedCreature, self).move()
+
+
 class FlyingCreature(Creature):
     """This creature can move unobstructed by other creatures/structures"""
     def __init__(self, name, probability, strength,
@@ -817,39 +853,7 @@ class FlyingCreature(Creature):
         super(FlyingCreature, self).__init__(name, probability, strength,
                                             defense, speed, resist, alignment)
         self.flight = True
-
-    def move(self):
-        self.moved = True
-        attackable_squares = []
-        movable_squares = []
-        # check all surrounding squares for vacancies or enemies to attack
-        for square in self.squares_in_range(self.speed):
-            occ = self.gameboard.occupant(square[0], square[1])
-            if isinstance(occ, Creature) and occ.commander != self:
-                attackable_squares.append((square[0], square[1]))
-            elif occ == 0:
-                movable_squares.append((square[0], square[1]))
-        print movable_squares + attackable_squares
-        print "Where would you like to move/attack?"
-        x = int(raw_input("X: "))
-        y = int(raw_input("Y: "))
-        # we're attacking an enemy square
-        if (x, y) in attackable_squares:
-            self.attack()
-            return
-
-        if (x, y) in movable_squares:
-            self.gameboard.occupy(self.x, self.y, 0)
-            self.gameboard.occupy(x, y, self)
-            self.x, self.y = x, y
-            # check our landing point for engagements
-            for square in self.squares_in_range(1):
-                occ = self.gameboard.occupant(square[0], square[1])
-                if (isinstance(occ, Creature) and 
-                    occ.commander != self.commander):
-                    self.attack()
-                    return
-
+        
 class SlimyCreature(Creature):
     """This creature can't be melee attacked by non-slime creatures"""
     def __init__(self, name, probability, strength,

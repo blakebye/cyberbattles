@@ -586,20 +586,60 @@ class Commander(Creature):
             self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Disrupt):
-            # NEED target x, y
-            # r = random.randint(5, 13)
-            # if (self.occupant(x, y).resist +
-            #     self.occupant(x, y).defense) < r:
-            #     self.kill_creature(x, y)
-            pass
+            targetable_squares = []
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    # if it's a creature
+                    if isinstance(occ, Creature):
+                        # and not owned by me
+                        if occ.commander != self:
+                            # it's targetable
+                            potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
+            print "Target Disrupt in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            occ = self.gameboard.occupant(x, y)
+            r = random.randint(5, 13)
+            if (occ.resist + occ.defense) < r:
+                self.gameboard.kill_creature(x, y)
+            
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Disintegrate):
-            # NEED target x, y
-            # r = random.randint(7, 17)
-            # if (self.occupant(x, y).resist +
-            #     self.occupant(x, y).defense) < r:
-            #     self.kill_creature(x, y)
-            pass
+            targetable_squares = []
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            targetable_squares = list(set(rangelist) & set(sightlist))
+            potential_squares = []
+            for j in range(10):
+                for i in range(15):
+                    # shorten down the code
+                    occ = self.gameboard.occupant(i + 1, j + 1)
+                    # if it's a creature
+                    if isinstance(occ, Creature):
+                        # and not owned by me
+                        if occ.commander != self:
+                            # it's targetable
+                            potential_squares.append((i + 1, j + 1))
+            print list(set(potential_squares) & set(targetable_squares))
+            print "Target Disintegrate in one of the above squares:"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            occ = self.gameboard.occupant(x, y)
+            r = random.randint(7, 17)
+            if (occ.resist + occ.defense) < r:
+                self.gameboard.kill_creature(x, y)
+            
+            # remove played card from hand
+            self.hand[self.hand.index(self.action_card)] = BlankCard()
 
         elif isinstance(self.action_card, Teleport):
             targetable_squares = []

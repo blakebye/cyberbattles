@@ -37,11 +37,11 @@ class Creature(object):
         dimension = r + 1
 
         # create the square
-        moves = [[0.0 for j in range(dimension + 1)] for i in range(dimension + 1)]
+        moves = [[0.0 for j in range(dimension)] for i in range(dimension)]
 
         # fill the square with the correct values
-        for i in range(dimension + 1):
-            for j in range(dimension + 1):
+        for i in range(dimension):
+            for j in range(dimension):
                 if j == 0 or i == 0:
                     moves[i][j] = float(i + j)
                 elif j <= i:
@@ -50,33 +50,35 @@ class Creature(object):
                     moves[i][j] = moves[i][j - 1] + 1
 
         # make sure they're rounded down to integer after generation
-        for y in range(dimension + 1):
-            for x in range(dimension + 1):
-                moves[y][x] = int(moves[y][x])
+        for i in range(dimension):
+            for j in range(dimension):
+                moves[i][j] = int(moves[i][j])
 
         # create the list of squares in range
         in_range = []
-        for y in range(dimension + 1):
-            for x in range(dimension + 1):
-                if moves[y][x] <= r:
-                    if (self.x + x <= 10 and self.x + x >= 1 and 
-                        self.y + y <= 15 and self.y + y >= 1):
-                        in_range.append((self.x + x, self.y + y))
-                    if (self.x - x <= 10 and self.x - x >= 1 and 
-                        self.y - y <= 15 and self.y - y >= 1):
-                        in_range.append((self.x - x, self.y - y))
-                    if (self.x + x <= 10 and self.x + x >= 1 and 
-                        self.y - y <= 15 and self.y - y >= 1):
-                        in_range.append((self.x + x, self.y - y))
-                    if (self.x - x <= 10 and self.x - x >= 1 and 
-                        self.y + y <= 15 and self.y + y >= 1):
-                        in_range.append((self.x - x, self.y + y))
+        for i in range(dimension):
+            for j in range(dimension):
+                if moves[i][j] <= r:
+                    if (self.x + j <= 15 and self.x + j >= 1 and 
+                        self.y + i <= 10 and self.y + i >= 1):
+                        in_range.append((self.x + j, self.y + i))
 
+                    if (self.x - j <= 15 and self.x - j >= 1 and 
+                        self.y - i <= 10 and self.y - i >= 1):
+                        in_range.append((self.x - j, self.y - i))
+
+                    if (self.x + j <= 15 and self.x + j >= 1 and 
+                        self.y - i <= 10 and self.y - i >= 1):
+                        in_range.append((self.x + j, self.y - i))
+
+                    if (self.x - j <= 15 and self.x - j >= 1 and 
+                        self.y + i <= 10 and self.y + i >= 1):
+                        in_range.append((self.x - j, self.y + i))
+                        
         in_range = list(set(in_range))
         in_range.remove((self.x, self.y))
 
         return in_range
-
         
     def squares_seen(self):
         """
@@ -470,13 +472,18 @@ class Commander(Creature):
                                 [i - 1]["alive"] = SubspaceBeacon()                
 
         elif isinstance(self.action_card, Mutate):
-            # requires a list of all_creatures
-            pass
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            print rangelist
+            print
+            print sightlist
+            print
+            print list(set(rangelist) & set(sightlist))
 
         elif isinstance(self.action_card, Hypnotize):
-            # NEED target x, y
-            # self.board[self.height - y][x - 1]["alive"] = \
-            # self.board[self.height - y][x - 1]["dead"]
+            rangelist = self.squares_in_range(self.action_card.cast_range)
+            sightlist = self.squares_seen()
+            print list(set(rangelist) & set(sightlist))
             pass
 
         elif isinstance(self.action_card, Resurrect):
@@ -520,6 +527,7 @@ class Commander(Creature):
         self.action_card = BlankCard()
 
     def move(self):
+        self.gameboard.message = "%s's TURN" % self.name
         self.gameboard.print_board()
         pass
 

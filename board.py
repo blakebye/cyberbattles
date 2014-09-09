@@ -90,14 +90,14 @@ class Gameboard(object):
             # bottom border for every line
             print('-' * (15 * 4 + 1), sep='')
 
-    def spawn_commander(self, commander, j, i):
+    def spawn_commander(self, commander, i, j):
         """
         This function is a helper to spawn_commanders that just cleans it up a
         bit.  It takes a commander and a pair of indices, and then places that
         commander at those indices and gives the commander his coordinates.
         """
-        self.board[j][i]["alive"] = commander
-        commander.x, commander.y = self.coordinates(j, i)
+        self.occupy(j + 1, 10 - i, commander)
+        commander.x, commander.y = (j + 1, 10 - i)
 
     def spawn_commanders(self):
         """
@@ -107,7 +107,7 @@ class Gameboard(object):
         """
 
         # create a commander for each player
-        commanders = [cards.Commander() for _ in 
+        commanders = [cards.Commander() for x in 
                       range(self.number_of_players)]
 
         # assign each commander its name and board controller
@@ -157,63 +157,58 @@ class Gameboard(object):
         return commanders
             
     def beam_creature(self, x, y, creature):
-        #don't beam a creature onto another living creature
-        if self.board[10 - y][x - 1]["alive"] == 0:
-            # if the board and the creature share alignments, 
-            # give a boost over the normal probability
-            r = random.randint(1, 10) / 10.0
-            if ((creature.alignment > 0 and self.alignment > 0) or
-               (creature.alignment < 0 and self.alignment < 0)):
-                success = creature.probability + abs(self.alignment) / 10.0
-            else:
-                success = creature.probability
-
-            # beam worked, place it on the board
-            if success >= r:
-                self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
-                self.board[10 - y][x - 1]["alive"] = creature
-                creature.x, creature.y = x, y
-            else:
-                self.message = "CREATURE FAILURE"
+        # if the board and the creature share alignments, 
+        # give a boost over the normal probability
+        r = random.randint(1, 10) / 10.0
+        if (creature.alignment * self.alignment > 0):
+            success = creature.probability + abs(self.alignment) / 10.0
         else:
-            print("ALREADY SOMETHING THERE")
+            success = creature.probability
 
-    def holo_creature(self, x, y, creature):
-        # don't holo onto existing living thing
-        if self.board[10 - y][x - 1]["alive"] == 0:
-            # holograms are successful 100% of the time
+        # beam worked, place it on the board
+        if success >= r:
             self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
-            self.board[10 - y][x - 1]["alive"] = creature
-            creature.hologram = True
+            self.occupy(x, y, creature)
             creature.x, creature.y = x, y
         else:
-            print("ALREADY SOMETHING THERE")
+            self.message = "CREATURE FAILURE"
+
+
+    def holo_creature(self, x, y, creature):
+        # holograms are successful 100% of the time
+        self.message = "BEAMED %s SUCCESSFULLY" % creature.name.upper()
+        self.occupy(x, y, creature)
+        creature.hologram = True
+        creature.x, creature.y = x, y
 
     def occupant(self, x, y):
         """This function takes a square and returns the living unit on it."""
         return self.board[10 - y][x - 1]["alive"]
 
+    def dead_occupant(self, x, y):
+        """This function takes a square and returns the living unit on it."""
+        return self.board[10 - y][x - 1]["dead"]
+
     def occupy(self, x, y, unit):
         """This function takes a square and an object and places it there."""
         self.board[10 - y][x - 1]["alive"] = unit
 
-    def coordinates(self, i, j):
-        """This function takes array coordinates and returns their x, y."""
-        return (j + 1, 10 - i)
-
-    def indices(self, x, y):
-        """This function takes x, y coordinates and returns their indices."""
-        return (10 - y, x - 1)
+    def dead_occupy(self, x, y, unit):
+        """This function takes a square and an object and places it there."""
+        self.board[10 - y][x - 1]["dead"] = unit
 
     def kill_creature(self, x, y):
         """
         This function takes a square and kills the unit on it. If the unit
         was real, leave a corpse. If hologram, just destroy it.
         """
-        if self.occupant(x, y).hologram != True:
-            self.board[10 - y][x - 1]["dead"] = \
-            self.board[10 - y][x - 1]["alive"]
-        self.board[10 - y][x - 1]["alive"] = 0
+        dead_creature = self.occupant(x, y)
+        dead_creature.commander.dead_creatures.append(dead_creature)
+        dead_creature.commander.creatures.remove(dead_creature)
+        if dead_creature.hologram != True:
+            self.dead_occupy(x, y, dead_creature)
+        self.occupy(x, y, 0)
+
 
     def kill_structure(self, x, y):
         """This function takes a square and destroys the structure on it."""

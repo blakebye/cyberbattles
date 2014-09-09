@@ -25,42 +25,60 @@ class Creature(object):
         self.movement = speed
         self.moved = False
 
-    def in_range(self, x1, y1, reach):
+    def squares_in_range(self, r):
         """
         This function creates an array that displays the minimum number of
         movements it would take to move to that targetted square if lateral
         movements take 1 unit and diagonal movements take 1.5 units. It then
-        checks the specific square in the function against the reach and returns
-        whether or not that square could be touched with that much range.
+        checks all the squares in the array against the desired reach and 
+        returns a list of the squares which could be reached.
         """
         # only create a square for as far as we need to
-        x = abs(x1 - self.x)
-        y = abs(y1 - self.y)
-        dimension = max(x, y) + 1
+        dimension = r + 1
 
         # create the square
-        moves = [[0.0 for j in range(dimension)] for i in range(dimension)]
+        moves = [[0.0 for j in range(dimension + 1)] for i in range(dimension + 1)]
 
         # fill the square with the correct values
-        for i in range(dimension):
-            for j in range(dimension):
+        for i in range(dimension + 1):
+            for j in range(dimension + 1):
                 if j == 0 or i == 0:
-                    moves[i][j] = float(x + y)
+                    moves[i][j] = float(i + j)
                 elif j <= i:
                     moves[i][j] = moves[i][j - 1] + 0.5
                 else:
                     moves[i][j] = moves[i][j - 1] + 1
 
-        # make sure they're rounded down to integer
-        for y in range(dimension):
-            for x in range(dimension):
+        # make sure they're rounded down to integer after generation
+        for y in range(dimension + 1):
+            for x in range(dimension + 1):
                 moves[y][x] = int(moves[y][x])
 
-        # return if it's in range or not
-        return moves[y1][x1] <= reach
-        
+        # create the list of squares in range
+        in_range = []
+        for y in range(dimension + 1):
+            for x in range(dimension + 1):
+                if moves[y][x] <= r:
+                    if (self.x + x <= 10 and self.x + x >= 1 and 
+                        self.y + y <= 15 and self.y + y >= 1):
+                        in_range.append((self.x + x, self.y + y))
+                    if (self.x - x <= 10 and self.x - x >= 1 and 
+                        self.y - y <= 15 and self.y - y >= 1):
+                        in_range.append((self.x - x, self.y - y))
+                    if (self.x + x <= 10 and self.x + x >= 1 and 
+                        self.y - y <= 15 and self.y - y >= 1):
+                        in_range.append((self.x + x, self.y - y))
+                    if (self.x - x <= 10 and self.x - x >= 1 and 
+                        self.y + y <= 15 and self.y + y >= 1):
+                        in_range.append((self.x - x, self.y + y))
 
-    def sees(self, x1, y1):
+        in_range = list(set(in_range))
+        in_range.remove((self.x, self.y))
+
+        return in_range
+
+        
+    def squares_seen(self, x1, y1):
         """
         This function is Bresenham's line creation algorithm. It takes two
         end-points of a line on a grid and determines which points to fill in

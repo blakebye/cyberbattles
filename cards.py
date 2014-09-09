@@ -22,7 +22,6 @@ class Creature(object):
         self.x = 0
         self.y = 0
         self.commander = 0
-        self.movement = speed
         self.moved = False
 
     def squares_in_range(self, r):
@@ -167,6 +166,90 @@ class Creature(object):
                 if square_seen == True:
                     seen.append((xorig, yorig))
         return seen
+
+    def move(self):
+        movement = float(self.speed)
+        self.moved = True
+        lateral_squares = []
+        diagonal_squares = []
+        attackable_squares = []
+        # check the 8 surrounding squares for vacancies or enemies to attack
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if (self.x + j >= 1 and self.x + j <= 15 and
+                    self.y + i >= 1 and self.y + i <= 10):
+                    occ = self.gameboard.occupant(self.x + j, self.y + i)
+                    if isinstance(occ, Creature) and occ.commander != self:
+                        attackable_squares.append((self.x + j, self.y + i))
+                    elif occ == 0:
+                        if i == 0 or j == 0:
+                            lateral_squares.append((self.x + j, self.y + i))
+                        else:
+                            diagonal_squares.append((self.x + j, self.y + i))
+        movable_squares = lateral_squares + diagonal_squares
+        print movable_squares + attackable_squares
+        print "Where would you like to move/attack?"
+        x = int(raw_input("X: "))
+        y = int(raw_input("Y: "))
+        # we're attacking an enemy square
+        if (x, y) in attackable_squares:
+            self.attack()
+            return
+
+        if (x, y) in movable_squares:
+            self.gameboard.occupy(self.x, self.y, 0)
+            self.gameboard.occupy(x, y, self)
+            if self.x == x or self.y == y:
+                movement -= 1
+            else:
+                movement -= 1.5
+            self.x, self.y = x, y
+            # check our landing point for engagements
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    if (self.x + j >= 1 and self.x + j <= 15 and
+                        self.y + i >= 1 and self.y + i <= 10):
+                        occ = self.gameboard.occupant(self.x + j, self.y + i)
+                        if (isinstance(occ, Creature) and 
+                            occ.commander != self.commander):
+                            self.attack()
+                            return
+
+        while movement >= 1:
+            movable_squares = []
+             # check the 8 surrounding squares for vacancies
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    occ = self.gameboard.occupant(self.x + j, self.y + i)
+                    if occ == 0:
+                        movable_squares.append((self.x + j, self.y + i))
+            if movement % 1 == 0:
+                self.gameboard.message = "%i MOVEMENT LEFT" % movement
+            else:
+                self.gameboard.message = "%.1f MOVEMENT LEFT" % movement
+            self.gameboard.print_board()
+            
+            print movable_squares
+            print "Where would you like to move?"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            if (x, y) in movable_squares:
+                self.gameboard.occupy(self.x, self.y, 0)
+                self.gameboard.occupy(x, y, self)
+                self.x, self.y = x, y
+                movement -= 1
+                # check our landing point for engagements
+                for i in range(-1, 2):
+                    for j in range(-1, 2):
+                        occ = self.gameboard.occupant(self.x + j, self.y + i)
+                        if (isinstance(occ, Creature) and 
+                            occ.commander != self.commander):
+                            self.attack()
+                            return
+
+    def attack(self):
+        print "ATTACK!!!!!"
+
 
 class Commander(Creature):
     """This creature is a commander."""
@@ -688,10 +771,25 @@ class Commander(Creature):
         # reset for next card choosing
         self.action_card = BlankCard()
 
-    def move(self):
-        self.gameboard.message = "%s's TURN" % self.name
-        self.gameboard.print_board()
-        # TODO - IMPLEMENT MOVE LOL
+    def move_phase(self):
+        # number of creatures to move
+        for _ in range(len(self.creatures)):
+            self.gameboard.message = "%s's TURN" % self.name
+            self.gameboard.print_board()
+            # print each creature's coordinates
+            for creature in self.creatures:
+                if not creature.moved:
+                    print str((creature.x, creature.y)) ,
+            print
+            print "Which creature would you like to move?"
+            x = int(raw_input("X: "))
+            y = int(raw_input("Y: "))
+            movable_squares = []
+            attackable_squares = []
+            moving_creature = self.gameboard.occupant(x, y)
+            moving_creature.move()
+            
+
 
 # ALL CARDS ARE IN THIS FOLD
 class BlankCard(object):
